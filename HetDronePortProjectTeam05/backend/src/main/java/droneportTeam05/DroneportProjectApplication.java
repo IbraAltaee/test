@@ -1,0 +1,13 @@
+package droneportTeam05;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DroneportProjectApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DroneportProjectApplication.class, args);
+	}
+
+}

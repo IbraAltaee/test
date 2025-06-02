@@ -1,0 +1,23 @@
+export type DroneOperationFormState = {
+  droneType: string | null;
+  lateralContingencyManoeuvre: string | null;
+  verticalContingencyManoeuvre: string | null;
+  methodOffTermination: string | null;
+  maxOperationalSpeed: number | undefined;
+  maxUavDimensions: number | undefined;
+  altitudeMeasurementErrorType: "barometric" | "GPS-based" | null;
+  altitudeMeasurementError: number;
+  gpsInaccuracy: number;
+  positionError: number;
+  mapError: number;
+  responseTime: number;
+  heightFlight: number | undefined;
+  rollAngle: number;
+  pitchAngle: number;
+  lateralParachuteTime: number | undefined;
+  verticalParachuteTime: number | undefined;
+  grbParachuteTime: number | undefined;
+  windSpeed: number | undefined;
+  parachuteDescent: number | undefined;
+  glideRatio: number | undefined;
+};
