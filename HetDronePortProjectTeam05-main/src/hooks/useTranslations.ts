@@ -19,6 +19,8 @@ export const useTranslations = () => {
     confirmations: (key: string, params?: Record<string, any>) => t(`confirmations.${key}`, params),
     tooltips: (key: string, params?: Record<string, any>) => t(`tooltips.${key}`, params),
     droneManagement: (key: string, params?: Record<string, any>) => t(`droneManagement.${key}`, params),
+    intro: (key: string, params?: Record<string, any>) => t(`intro.${key}`, params),
+    emailConfig: (key: string, params?: Record<string, any>) => t(`emailConfig.${key}`, params),
   };
 };
 

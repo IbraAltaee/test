@@ -15,6 +15,27 @@
       "calculate": "Berekenen",
       "adminDashboard": "Admin Dashboard"
     },
+    "intro": {
+      "welcomeMessage": "Welkom bij de geavanceerde drone operatie calculator. Configureer hieronder uw UAV parameters om precieze operationele volumes te berekenen, waaronder vluchtgeografie, noodvolumes en grondrisico buffers."
+    },
+    "emailConfig": {
+      "emailConfiguration": "Email Configuratie",
+      "configureDefaultEmailTemplate": "Configureer het standaard email onderwerp en body sjabloon dat wordt gebruikt wanneer gebruikers emails versturen.",
+      "emailSubjectTemplate": "Email Onderwerp Sjabloon",
+      "enterDefaultEmailSubject": "Voer hier het standaard email onderwerp in...",
+      "subjectTemplateDescription": "Dit sjabloon wordt gebruikt als het standaard email onderwerp wanneer gebruikers emails versturen via het systeem.",
+      "emailBodyTemplate": "Email Body Sjabloon",
+      "enterDefaultEmailBody": "Voer hier het standaard email body sjabloon in...",
+      "bodyTemplateDescription": "Dit sjabloon wordt gebruikt als de standaard email body wanneer gebruikers emails versturen via het systeem.",
+      "saveChanges": "Wijzigingen Opslaan",
+      "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen",
+      "authenticationRequired": "Authenticatie vereist",
+      "subjectCannotBeEmpty": "Email onderwerp kan niet leeg zijn",
+      "bodyCannotBeEmpty": "Email body kan niet leeg zijn",
+      "templateSavedSuccessfully": "Email sjabloon succesvol opgeslagen!",
+      "failedToSaveTemplate": "Opslaan van email sjabloon mislukt",
+      "failedToLoadTemplate": "Laden van email sjabloon mislukt"
+    },
     "form": {
       "droneOperationCalculator": "Drone Operatie Calculator",
       "configureUavParameters": "Configureer UAV parameters om operationele volumes te berekenen",
@@ -150,14 +171,14 @@
       "saving": "Opslaan...",
       "mapPreviewInfo": "Kaart voorbeeld verschijnt wanneer ten minste 3 complete punten zijn toegevoegd",
       "howToCreateValidZone": "💡 Hoe maak je een geldige zone:",
-      "howToCreateValidZoneSteps": [
-        "Voer een zone naam in (2-50 karakters)",
-        "Voeg ten minste 3 punten toe met geldige coördinaten",
-        "Breedtegraad: tussen -90 en 90 graden",
-        "Lengtegraad: tussen -180 en 180 graden",
-        "Gebruik decimaal formaat (bijv. 50.123 of 50,123)",
-        "De kaart zoomt automatisch in om je zone te tonen"
-      ],
+      "howToCreateValidZoneSteps": {
+      "0": "Voer een zone naam in (2-50 karakters)",
+      "1":  "Voeg ten minste 3 punten toe met geldige coördinaten",
+      "2": "Breedtegraad: tussen -90 en 90 graden",
+      "3": "Lengtegraad: tussen -180 en 180 graden",
+      "4": "Gebruik decimaal formaat (bijv. 50.123 of 50,123)",
+      "5": "De kaart zoomt automatisch in om je zone te tonen"
+      },
       "noPointsAdded": "Nog geen punten toegevoegd.",
       "clickAddPointToStart": "Klik \"Punt Toevoegen\" om te beginnen.",
       "pointIncomplete": "Punt {{index}} is incompleet",
@@ -166,7 +187,6 @@
       "pleaseFixFollowingIssues": "Los de volgende problemen op:",
       "pleaseFixFormErrorsBeforeSaving": "Los formulierfouten op voordat je opslaat",
       "maxFlightHeight": "Maximale Vluchthoogte"
-
     },
     "map": {
       "mapVisualization": "Kaart Visualisatie",
@@ -257,6 +277,7 @@
       "pleaseLoginToAccess": "Log in om toegang te krijgen tot het dashboard"
     },
     "footer": {
+      "operationsAssistant": "Operatie Assistent",
       "advancedDroneOperations": "Geavanceerde drone operatie calculator ontworpen voor het berekenen van vluchtgeografie, noodvolumes en grondrisico buffers met precisie en betrouwbaarheid.",
       "features": "Functies",
       "flightGeographyCalculation": "Vluchtgeografie Berekening",
@@ -294,7 +315,8 @@
       "name": "Naam",
       "actions": "Acties",
       "goToTop": "Ga naar boven",
-      "noData": "N.v.t."
+      "noData": "N.v.t.",
+      "saving": "Opslaan..."
     },
     "validation": {
       "droneTypeRequired": "Drone type is vereist",

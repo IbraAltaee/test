@@ -3,11 +3,13 @@
 import React from "react";
 import { GoogleMap, Polygon } from "@react-google-maps/api";
 import { Zone } from "@/types/zone";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface ZoneMapProps {
   zone: Zone;
   mapId: string;
 }
+
 
 const ZoneMap: React.FC<ZoneMapProps> = ({ zone, mapId }) => {
   const getValidPath = (): google.maps.LatLngLiteral[] => {
@@ -35,6 +37,9 @@ const ZoneMap: React.FC<ZoneMapProps> = ({ zone, mapId }) => {
       }
     }
   };
+
+  const { zone: zoneTranslations } = useTranslations();
+
 
   return (
     <div className="h-96 w-full border rounded-lg overflow-hidden relative">
@@ -65,8 +70,7 @@ const ZoneMap: React.FC<ZoneMapProps> = ({ zone, mapId }) => {
       {validPath.length < 3 && (
         <div className="absolute inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center">
           <div className="text-center text-gray-600">
-            <p className="text-sm">Map preview will appear when</p>
-            <p className="text-sm">at least 3 complete points are added</p>
+            <p className="text-sm">{zoneTranslations("mapPreviewInfo")}</p>
           </div>
         </div>
       )}

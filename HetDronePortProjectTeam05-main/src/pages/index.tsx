@@ -12,8 +12,11 @@ import { Zone } from "@/types/zone";
 import { zoneService } from "@/services/ZoneService";
 import { FaInfoCircle } from "react-icons/fa";
 import IntroText from "@/components/IntroText";
+import { useTranslations } from "@/hooks/useTranslations";
 
 const DroneOperationCalculator: React.FC = () => {
+  const { map: mapTranslations, notifications } = useTranslations();
+  
   const [activeTab, setActiveTab] = useState<"map" | "results">("map");
   const [formResponse, setFormResponse] = useState(null);
   const [selectedPolygon, setSelectedPolygon] = useState<Zone>();
@@ -29,7 +32,7 @@ const DroneOperationCalculator: React.FC = () => {
       );
 
       if (!data || data.length === 0) {
-        setMaxHeightError("No zones found for the specified height");
+        setMaxHeightError(notifications("noZonesFoundForHeight"));
         setZones([]);
         setSelectedPolygon(undefined);
         return;
@@ -74,7 +77,7 @@ const DroneOperationCalculator: React.FC = () => {
                   }`}
                   onClick={() => setActiveTab("map")}
                 >
-                  Map Visualization
+                  {mapTranslations("mapVisualization")}
                 </button>
                 {formResponse && (
                   <button
@@ -85,19 +88,19 @@ const DroneOperationCalculator: React.FC = () => {
                     }`}
                     onClick={() => setActiveTab("results")}
                   >
-                    Detailed Results
+                    {mapTranslations("detailedResults")}
                   </button>
                 )}
               </div>
               <div className="flex flex-col gap-4 mt-2 ml-4">
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium text-gray-700">
-                    Available Zones ({zones.length})
+                    {mapTranslations("availableZones")} ({zones.length})
                   </label>
                   <div className="group relative">
                     <FaInfoCircle className="text-gray-400 text-xs cursor-help" />
                     <div className="absolute left-6 top-0 invisible group-hover:visible bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
-                      Zones filtered by flight height: {maxHeight}m
+                      {mapTranslations("zonesFilteredByHeight")}: {maxHeight}m
                     </div>
                   </div>
                 </div>
@@ -115,7 +118,7 @@ const DroneOperationCalculator: React.FC = () => {
                   disabled={zones.length === 0}
                 >
                   {zones.length === 0 ? (
-                    <option value="">No zones available at this height</option>
+                    <option value="">{mapTranslations("noZonesAvailable")}</option>
                   ) : (
                     zones.map((zone) => (
                       <option key={zone.name} value={zone.name}>

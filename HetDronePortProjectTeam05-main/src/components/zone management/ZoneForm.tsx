@@ -6,6 +6,8 @@ import { Zone } from "@/types/zone";
 import PointList from "./PointList";
 import ZoneMap from "./ZoneMap";
 import { useTranslations } from "@/hooks/useTranslations";
+import { useMemo } from "react";
+
 
 interface ZoneFormProps {
   mode: "create" | "edit";
@@ -146,6 +148,11 @@ const ZoneForm: React.FC<ZoneFormProps> = ({
     return errors;
   };
 
+
+const mapId = useMemo(() => {
+  return `${mode}-${zone.name}-${zone.path.length}-${Date.now()}`;
+}, [mode, zone.name, zone.path.length]);
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="bg-white shadow px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center max-w-7xl mx-auto">
@@ -267,7 +274,7 @@ const ZoneForm: React.FC<ZoneFormProps> = ({
               <h4 className="text-lg font-medium mb-4">{zoneTranslations("mapPreview")}</h4>
               <ZoneMap
                 zone={zone}
-                mapId={`${mode}-${zone.name}-${zone.path.length}-${Date.now()}`}
+                mapId={mapId}
               />
 
               <div className="mt-4 bg-blue-50 p-3 rounded-lg">
@@ -312,9 +319,9 @@ const ZoneForm: React.FC<ZoneFormProps> = ({
               {zoneTranslations("howToCreateValidZone")}
             </h5>
             <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-              {(zoneTranslations("howToCreateValidZoneSteps")as unknown as string[]).map((step: string, index: number) => (
-                <li key={index}>{step}</li>
-              ))}
+            {[0,1,2,3,4,5].map((i) => (
+              <li key={i}>{zoneTranslations(`howToCreateValidZoneSteps.${i}`)}</li>
+            ))}
             </ul>
           </div>
         </div>

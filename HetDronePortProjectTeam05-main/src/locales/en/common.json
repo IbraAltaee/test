@@ -15,6 +15,27 @@
       "calculate": "Calculate",
       "adminDashboard": "Admin Dashboard"
     },
+    "intro": {
+      "welcomeMessage": "Welcome to the advanced drone operations calculator. Configure your UAV parameters below to calculate precise operational volumes including flight geography, contingency volumes, and ground risk buffers."
+    },
+    "emailConfig": {
+      "emailConfiguration": "Email Configuration",
+      "configureDefaultEmailTemplate": "Configure the default email subject and body template that will be used when users send emails.",
+      "emailSubjectTemplate": "Email Subject Template",
+      "enterDefaultEmailSubject": "Enter the default email subject here...",
+      "subjectTemplateDescription": "This template will be used as the default email subject when users send emails through the system.",
+      "emailBodyTemplate": "Email Body Template",
+      "enterDefaultEmailBody": "Enter the default email body template here...",
+      "bodyTemplateDescription": "This template will be used as the default email body when users send emails through the system.",
+      "saveChanges": "Save Changes",
+      "unsavedChanges": "You have unsaved changes",
+      "authenticationRequired": "Authentication required",
+      "subjectCannotBeEmpty": "Email subject cannot be empty",
+      "bodyCannotBeEmpty": "Email body cannot be empty",
+      "templateSavedSuccessfully": "Email template saved successfully!",
+      "failedToSaveTemplate": "Failed to save email template",
+      "failedToLoadTemplate": "Failed to load email template"
+    },
     "form": {
       "droneOperationCalculator": "Drone Operation Calculator",
       "configureUavParameters": "Configure UAV parameters to calculate operational volumes",
@@ -151,14 +172,14 @@
       "saving": "Saving...",
       "mapPreviewInfo": "Map preview will appear when at least 3 complete points are added",
       "howToCreateValidZone": "💡 How to create a valid zone:",
-      "howToCreateValidZoneSteps": [
-        "Enter a zone name (2-50 characters)",
-        "Add at least 3 points with valid coordinates",
-        "Latitude: between -90 and 90 degrees",
-        "Longitude: between -180 and 180 degrees",
-        "Use decimal format (e.g., 50.123 or 50,123)",
-        "The map will automatically zoom to show your zone"
-      ],
+      "howToCreateValidZoneSteps": {
+        "0": "Enter a zone name (2-50 characters)",
+        "1": "Add at least 3 points with valid coordinates",
+        "2": "Latitude: between -90 and 90 degrees",
+        "3": "Longitude: between -180 and 180 degrees",
+        "4": "Use decimal format (e.g., 50.123 or 50,123)",
+        "5": "The map will automatically zoom to show your zone"
+      },
       "noPointsAdded": "No points added yet.",
       "clickAddPointToStart": "Click \"Add Point\" to start.",
       "pointIncomplete": "Point {{index}} is incomplete",
@@ -257,6 +278,7 @@
       "pleaseLoginToAccess": "Please log in to access the dashboard"
     },
     "footer": {
+      "operationsAssistant": "Operations Assistant",
       "advancedDroneOperations": "Advanced drone operations calculator designed for calculating flight geography, contingency volumes, and ground risk buffers with precision and reliability.",
       "features": "Features",
       "flightGeographyCalculation": "Flight Geography Calculation",
@@ -294,7 +316,8 @@
       "name": "Name",
       "actions": "Actions",
       "goToTop": "Go to top",
-      "noData": "N/A"
+      "noData": "N/A",
+      "saving": "Saving..."
     },
     "validation": {
       "droneTypeRequired": "Drone type is required",

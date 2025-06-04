@@ -3,6 +3,7 @@ import EmailService from "@/services/EmailService";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { FaSpinner, FaTimesCircle } from "react-icons/fa";
+import { useTranslations } from "@/hooks/useTranslations";
 
 const EmailConfig: React.FC = () => {
   const [emailSubject, setEmailSubject] = useState<string>("");
@@ -12,6 +13,7 @@ const EmailConfig: React.FC = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   const { token } = useAuth();
+  const { emailConfig, common } = useTranslations();
 
   useEffect(() => {
     loadEmailTemplate();
@@ -28,7 +30,7 @@ const EmailConfig: React.FC = () => {
       setEmailBody(response.body ? response.body.replace(/\\n/g, "\n") : "");
       setHasChanges(false);
     } catch (err: any) {
-      const errorMsg = err.message || "Failed to load email template";
+      const errorMsg = err.message || emailConfig("failedToLoadTemplate");
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {
@@ -50,17 +52,17 @@ const EmailConfig: React.FC = () => {
 
   const handleSaveChanges = async () => {
     if (!token) {
-      setError("Authentication required");
+      setError(emailConfig("authenticationRequired"));
       return;
     }
 
     if (!emailSubject.trim()) {
-      setError("Email subject cannot be empty");
+      setError(emailConfig("subjectCannotBeEmpty"));
       return;
     }
 
     if (!emailBody.trim()) {
-      setError("Email body cannot be empty");
+      setError(emailConfig("bodyCannotBeEmpty"));
       return;
     }
 
@@ -71,13 +73,13 @@ const EmailConfig: React.FC = () => {
       const response = EmailService.updateTemplate(emailSubject, emailBody);
 
       if (!response) {
-        throw new Error("Failed to save email template");
+        throw new Error(emailConfig("failedToSaveTemplate"));
       }
 
       setHasChanges(false);
-      toast.success("Email template saved successfully!");
+      toast.success(emailConfig("templateSavedSuccessfully"));
     } catch (err: any) {
-      const errorMsg = err.message || "Failed to save email template";
+      const errorMsg = err.message || emailConfig("failedToSaveTemplate");
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {
@@ -109,11 +111,10 @@ const EmailConfig: React.FC = () => {
       <div className="p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Email Configuration
+            {emailConfig("emailConfiguration")}
           </h2>
           <p className="text-gray-600 text-sm">
-            Configure the default email subject and body template that will be
-            used when users send emails.
+            {emailConfig("configureDefaultEmailTemplate")}
           </p>
         </div>
 
@@ -136,7 +137,7 @@ const EmailConfig: React.FC = () => {
               htmlFor="email-subject"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Email Subject Template
+              {emailConfig("emailSubjectTemplate")}
             </label>
             <input
               id="email-subject"
@@ -144,12 +145,11 @@ const EmailConfig: React.FC = () => {
               value={emailSubject}
               onChange={(e) => handleSubjectChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter the default email subject here..."
+              placeholder={emailConfig("enterDefaultEmailSubject")}
               disabled={loading}
             />
             <p className="mt-2 text-sm text-gray-500">
-              This template will be used as the default email subject when users
-              send emails through the system.
+              {emailConfig("subjectTemplateDescription")}
             </p>
           </div>
 
@@ -158,7 +158,7 @@ const EmailConfig: React.FC = () => {
               htmlFor="email-body"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Email Body Template
+              {emailConfig("emailBodyTemplate")}
             </label>
             <textarea
               id="email-body"
@@ -166,12 +166,11 @@ const EmailConfig: React.FC = () => {
               value={emailBody}
               onChange={(e) => handleBodyChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-vertical"
-              placeholder="Enter the default email body template here..."
+              placeholder={emailConfig("enterDefaultEmailBody")}
               disabled={loading}
             />
             <p className="mt-2 text-sm text-gray-500">
-              This template will be used as the default email body when users
-              send emails through the system.
+              {emailConfig("bodyTemplateDescription")}
             </p>
           </div>
 
@@ -190,10 +189,10 @@ const EmailConfig: React.FC = () => {
                 {loading ? (
                   <>
                     <FaSpinner className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
-                    Saving...
+                    {common("saving")}...
                   </>
                 ) : (
-                  "Save Changes"
+                  emailConfig("saveChanges")
                 )}
               </button>
 
@@ -204,14 +203,14 @@ const EmailConfig: React.FC = () => {
                   disabled={loading}
                   className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Reset
+                  {common("cancel")}
                 </button>
               )}
             </div>
 
             {hasChanges && (
               <p className="text-sm text-orange-600">
-                You have unsaved changes
+                {emailConfig("unsavedChanges")}
               </p>
             )}
           </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { pdf } from "@react-pdf/renderer";
 import MyDocument from "@/components/generatePDF";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface ResultsSummaryProps {
   data: any;
@@ -11,6 +12,8 @@ interface ResultsSummaryProps {
 }
 
 const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
+  const { results } = useTranslations();
+  
   const [expandedSections, setExpandedSections] = useState<{
     uav: boolean;
     flightGeography: boolean;
@@ -57,7 +60,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
   if (!data) {
     return (
       <div className="text-center p-8">
-        <p>No calculation results available</p>
+        <p>{results("noCalculationResults")}</p>
       </div>
     );
   }
@@ -65,19 +68,19 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md m-4 text-gray-800 border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-700 mb-4">
-        Calculation Results for {zone.name}
+        {results("calculationResults")} {zone.name}
       </h2>
 
       {!data.success && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
-          <h3 className="font-bold">Error</h3>
-          <p>{data.errorMessage || "An error occurred during calculation"}</p>
+          <h3 className="font-bold">{results("error")}</h3>
+          <p>{data.errorMessage || results("errorOccurred")}</p>
         </div>
       )}
 
       {data.warnings && data.warnings.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg mb-6">
-          <h3 className="font-bold">Warnings</h3>
+          <h3 className="font-bold">{results("warnings")}</h3>
           <ul className="list-disc ml-5 mt-2">
             {data.warnings.map((warning: string, index: number) => (
               <li key={index}>{warning}</li>
@@ -93,7 +96,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             onClick={() => toggleSection("uav")}
           >
             <span className="font-semibold text-gray-700">
-              UAV Specifications
+              {results("uavSpecifications")}
             </span>
             {expandedSections.uav ? <FaChevronDown /> : <FaChevronRight />}
           </button>
@@ -101,18 +104,18 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Type:</span>
+                  <span className="text-gray-600">{results("type")}:</span>
                   <span className="font-medium">{data.uav.type}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Max Speed:</span>
+                  <span className="text-gray-600">{results("maxSpeed")}:</span>
                   <span className="font-medium">
                     {formatValue(data.uav.maxOperationalSpeed)} m/s
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Characteristic Dimension:
+                    {results("characteristicDimension")}:
                   </span>
                   <span className="font-medium">
                     {formatValue(data.uav.maxCharacteristicDimension)} m
@@ -120,7 +123,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Altitude Measurement Error Type:
+                    {results("altitudeMeasurementErrorType")}:
                   </span>
                   <span className="font-medium">
                     {data.uav.altitudeMeasurementErrorType}
@@ -128,32 +131,32 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Altitude Measurement Error:
+                    {results("altitudeMeasurementError")}:
                   </span>
                   <span className="font-medium">
                     {formatValue(data.uav.altitudeMeasurementError)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">GPS Inaccuracy:</span>
+                  <span className="text-gray-600">{results("gpsInaccuracy")}:</span>
                   <span className="font-medium">
                     {formatValue(data.uav.gpsInaccuracy)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Position Holding Error:</span>
+                  <span className="text-gray-600">{results("positionHoldingError")}:</span>
                   <span className="font-medium">
                     {formatValue(data.uav.positionHoldingError)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Map Error:</span>
+                  <span className="text-gray-600">{results("mapError")}:</span>
                   <span className="font-medium">
                     {formatValue(data.uav.mapError)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Response Time:</span>
+                  <span className="text-gray-600">{results("responseTime")}:</span>
                   <span className="font-medium">
                     {formatValue(data.uav.responseTime)} s
                   </span>
@@ -169,7 +172,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             onClick={() => toggleSection("flightGeography")}
           >
             <span className="font-semibold text-gray-700">
-              Flight Geography
+              {results("flightGeography")}
             </span>
             {expandedSections.flightGeography ? (
               <FaChevronDown />
@@ -181,19 +184,19 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Height:</span>
+                  <span className="text-gray-600">{results("height")}:</span>
                   <span className="font-medium">
                     {formatValue(data.flightGeography.heightFlightGeo)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Minimum Height:</span>
+                  <span className="text-gray-600">{results("minimumHeight")}:</span>
                   <span className="font-medium">
                     {formatValue(data.flightGeography.minHeight)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Minimum Width:</span>
+                  <span className="text-gray-600">{results("minimumWidth")}:</span>
                   <span className="font-medium">
                     {formatValue(data.flightGeography.minWdith)} m
                   </span>
@@ -209,7 +212,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             onClick={() => toggleSection("lateralCV")}
           >
             <span className="font-semibold text-gray-700">
-              Lateral Contingency Volume
+              {results("lateralContingencyVolume")}
             </span>
             {expandedSections.lateralCV ? (
               <FaChevronDown />
@@ -221,20 +224,20 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Contingency Manoeuvre:</span>
+                  <span className="text-gray-600">{results("contingencyManoeuvre")}:</span>
                   <span className="font-medium">
                     {data.lateralCV.contingencyManoeuvre}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Lateral Extension:</span>
+                  <span className="text-gray-600">{results("lateralExtension")}:</span>
                   <span className="font-medium">
                     {formatValue(data.lateralCV.lateralExtension)} m
                   </span>
                 </div>
                 {data.lateralCV.contingencyManoeuvre === "TURN_180" && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Roll Angle:</span>
+                    <span className="text-gray-600">{results("rollAngle")}:</span>
                     <span className="font-medium">
                       {formatValue(data.lateralCV.rollAngle)}°
                     </span>
@@ -242,7 +245,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                 )}
                 {data.lateralCV.contingencyManoeuvre === "STOPPING" && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Pitch Angle:</span>
+                    <span className="text-gray-600">{results("pitchAngle")}:</span>
                     <span className="font-medium">
                       {formatValue(data.lateralCV.pitchAngle)}°
                     </span>
@@ -252,7 +255,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                   "PARACHUTE_TERMINATION" && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">
-                      Time to Open Parachute:
+                      {results("timeToOpenParachute")}:
                     </span>
                     <span className="font-medium">
                       {formatValue(data.lateralCV.timeToOpenParachute)} s
@@ -270,7 +273,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             onClick={() => toggleSection("verticalCV")}
           >
             <span className="font-semibold text-gray-700">
-              Vertical Contingency Volume
+              {results("verticalContingencyVolume")}
             </span>
             {expandedSections.verticalCV ? (
               <FaChevronDown />
@@ -282,14 +285,14 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Contingency Manoeuvre:</span>
+                  <span className="text-gray-600">{results("contingencyManoeuvre")}:</span>
                   <span className="font-medium">
                     {data.verticalCV.contingencyManoeuvre}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Height Contingency Manoeuvre:
+                    {results("heightContingencyManoeuvre")}:
                   </span>
                   <span className="font-medium">
                     {formatValue(data.verticalCV.heightContingencyManoeuvre)} m
@@ -297,7 +300,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Minimum Vertical Dimension:
+                    {results("minimumVerticalDimension")}:
                   </span>
                   <span className="font-medium">
                     {formatValue(data.verticalCV.minVerticalDimension)} m
@@ -307,7 +310,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                   "PARACHUTE_TERMINATION" && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">
-                      Time to Open Parachute:
+                      {results("timeToOpenParachute")}:
                     </span>
                     <span className="font-medium">
                       {formatValue(data.verticalCV.timeToOpenParachute)} s
@@ -325,7 +328,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             onClick={() => toggleSection("grb")}
           >
             <span className="font-semibold text-gray-700">
-              Ground Risk Buffer
+              {results("groundRiskBuffer")}
             </span>
             {expandedSections.grb ? <FaChevronDown /> : <FaChevronRight />}
           </button>
@@ -333,12 +336,12 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Termination Type:</span>
+                  <span className="text-gray-600">{results("terminationType")}:</span>
                   <span className="font-medium">{data.grb.termination}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Minimum Lateral Dimension:
+                    {results("minimumLateralDimension")}:
                   </span>
                   <span className="font-medium">
                     {formatValue(data.grb.minLateralDimension)} m
@@ -348,7 +351,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                   <>
                     <div className="flex justify-between">
                       <span className="text-gray-600">
-                        Time to Open Parachute:
+                        {results("timeToOpenParachute")}:
                       </span>
                       <span className="font-medium">
                         {formatValue(data.grb.timeToOpenParachute)} s
@@ -356,14 +359,14 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">
-                        Max Permissible Wind Speed:
+                        {results("maxPermissibleWindSpeed")}:
                       </span>
                       <span className="font-medium">
                         {formatValue(data.grb.maxPermissibleWindSpeed)} m/s
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Rate of Descent:</span>
+                      <span className="text-gray-600">{results("rateOfDescent")}:</span>
                       <span className="font-medium">
                         {formatValue(data.grb.rateOfDescent)} m/s
                       </span>
@@ -372,7 +375,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
                 )}
                 {data.grb.termination === "OFF_GLIDING" && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Glide Ratio:</span>
+                    <span className="text-gray-600">{results("glideRatio")}:</span>
                     <span className="font-medium">
                       {formatValue(data.grb.glideRatio)}
                     </span>
@@ -388,7 +391,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             className="w-full px-4 py-3 text-left flex items-center justify-between focus:outline-none"
             onClick={() => toggleSection("adjacentVolume")}
           >
-            <span className="font-semibold text-gray-700">Adjacent Volume</span>
+            <span className="font-semibold text-gray-700">{results("adjacentVolume")}</span>
             {expandedSections.adjacentVolume ? (
               <FaChevronDown />
             ) : (
@@ -399,13 +402,13 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
             <div className="px-4 py-3 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Lateral In Meter:</span>
+                  <span className="text-gray-600">{results("lateralInMeter")}:</span>
                   <span className="font-medium">
                     {formatValue(data.adjacentVolume?.lateralInMeter)} m
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Vertical In Meter:</span>
+                  <span className="text-gray-600">{results("verticalInMeter")}:</span>
                   <span className="font-medium">
                     {formatValue(data.adjacentVolume?.verticalInMeter)} m
                   </span>
@@ -418,9 +421,9 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
 
       <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="text-sm text-gray-500">
-          <p>Calculation Time: {data.calculationTimeMs} ms</p>
+          <p>{results("calculationTime")}: {data.calculationTimeMs} ms</p>
           <p>
-            Timestamp:{" "}
+            {results("timestamp")}:{" "}
             {data.calculationTimestamp || new Date().toLocaleString()}
           </p>
         </div>
@@ -428,7 +431,7 @@ const ResultsSummary: React.FC<ResultsSummaryProps> = ({ data, zone }) => {
           onClick={handleDownload}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          Download as PDF
+          {results("downloadAsPdf")}
         </button>
       </div>
     </div>
