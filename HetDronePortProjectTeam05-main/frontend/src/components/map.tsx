@@ -17,7 +17,6 @@ import { generateEmailBody } from "@/utils/generateEmailBody";
 import { Zone } from "@/types/zone";
 import { InfoIconComponent } from "./infoIcon";
 import { FaDownload, FaEnvelope } from "react-icons/fa";
-import { useTranslations } from "@/hooks/useTranslations";
 
 const containerStyle = {
   width: "100%",
@@ -33,14 +32,11 @@ interface MapWithSquareProps {
   data: any;
   zone: any;
 }
-
 const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [insetPolygons, setInsetPolygons] = useState<any[]>([]);
   const [selectedPolygon, setSelectedPolygon] = useState<Zone>(zone);
   const [zonePath, setZonePath] = useState<google.maps.LatLngLiteral[]>();
-
-  const { map: mapTranslations, notifications } = useTranslations();
 
   const getValidPath = (zone: Zone): google.maps.LatLngLiteral[] => {
     return zone?.path
@@ -133,13 +129,13 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
         !firstInset ||
         firstInset.geometry.coordinates.length === 0
       ) {
-        toast.error(notifications("bufferZoneTooLarge"));
+        toast.error("Buffer zone is too large for this flight zone");
         setInsetPolygons([]);
       } else {
         setInsetPolygons([originalPolygon, firstInset, secondInset]);
       }
     }
-  }, [data, selectedPolygon, notifications]);
+  }, [data, selectedPolygon]);
 
   const renderInsetPolygons = () => {
     return insetPolygons.map((polygon, index) => {
@@ -225,13 +221,13 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
 
   const handleEmailClick = async () => {
     if (!email) {
-      toast.error(mapTranslations("pleaseEnterValidEmail"));
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error(mapTranslations("pleaseEnterValidEmail"));
+      toast.error("Please enter a valid email address.");
       return;
     }
     const kmlFiles: File[] = [];
@@ -273,7 +269,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
 
     const pdf = await EmailService.generatePDFFile(data);
 
-    toast.info(notifications("sendingEmail"));
+    toast.info("Sending email...");
     const success = await EmailService.sendEmailToClient({
       to: email,
       subject: "Your KML File",
@@ -286,9 +282,9 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
       files: [...kmlFiles, pdf],
     });
     if (success && success2) {
-      toast.success(notifications("emailSentSuccessfully"));
+      toast.success("Email sent successfully!");
     } else {
-      toast.error(notifications("failedToSendEmail"));
+      toast.error("Failed to send email, please try again.");
     }
   };
 
@@ -358,7 +354,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
 
           <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 p-3 rounded-lg shadow-md border border-gray-200 max-w-xs">
             <h3 className="font-bold text-sm mb-2 text-gray-800">
-              {mapTranslations("flightZones")}
+              Flight Zones
             </h3>
             <ul className="space-y-1.5">
               {insetPolygons.length > 2 && (
@@ -366,7 +362,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                   <li className="flex items-center justify-between text-xs">
                     <div className="flex items-center">
                       <span className="inline-block w-3 h-3 bg-green-500 mr-2 rounded-sm"></span>
-                      <span className="text-gray-700">{mapTranslations("flightGeography")}</span>
+                      <span className="text-gray-700">Flight Geography</span>
                     </div>
                     <span className="font-medium ml-2">
                       {(turf.area(insetPolygons[2]) / 1000000).toFixed(3)} km²
@@ -376,7 +372,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                   <li className="flex items-center justify-between text-xs">
                     <div className="flex items-center">
                       <span className="inline-block w-3 h-3 bg-yellow-400 mr-2 rounded-sm"></span>
-                      <span className="text-gray-700">{mapTranslations("contingencyVolume")}</span>
+                      <span className="text-gray-700">Contingency Volume</span>
                     </div>
                     <span className="font-medium ml-2">
                       {(
@@ -391,7 +387,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                   <li className="flex items-center justify-between text-xs">
                     <div className="flex items-center">
                       <span className="inline-block w-3 h-3 bg-red-500 mr-2 rounded-sm"></span>
-                      <span className="text-gray-700">{mapTranslations("groundRiskBuffer")}</span>
+                      <span className="text-gray-700">Ground Risk Buffer</span>
                     </div>
                     <span className="font-medium ml-2">
                       {(
@@ -406,7 +402,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
               )}
             </ul>
             <div className="text-xs text-gray-500 mt-2 text-right">
-              {mapTranslations("areasInSquareKilometers")}
+              Areas in square kilometers
             </div>
           </div>
         </GoogleMap>
@@ -418,15 +414,15 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                 <div className="flex items-center mb-3">
                   <FaDownload className="w-5 h-5 text-green-600 mr-2" />
                   <h3 className="text-lg font-semibold text-green-900">
-                    {mapTranslations("downloadFiles")}
+                    Download Files
                   </h3>
                 </div>
                 <p className="text-sm text-green-700 mb-3">
-                  {mapTranslations("downloadFilesDirectly")}
+                  Download files directly to your device
                 </p>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-green-800 mb-2">
-                    {mapTranslations("selectFileTypes")}
+                    Select file types to download
                   </label>
                   <div className="space-y-2">
                     <label className="flex items-center p-2 hover:bg-green-100 rounded">
@@ -438,7 +434,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                       />
 
                       <span className="ml-3 text-sm text-green-800 font-medium">
-                        {mapTranslations("standardKml")}
+                        Standard KML
                       </span>
                       <InfoIconComponent text="Contains all zones in a flat 2D view. Ideal for general reference and planning in mapping tools." />
                     </label>
@@ -450,7 +446,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                         className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                       />
                       <span className="ml-3 text-sm text-green-800 font-medium">
-                        {mapTranslations("kml3d")}
+                        3D KML
                       </span>
                       <InfoIconComponent text="Visualize the zones in 3D to better understand spatial layout and vertical use. It can be imported in Google Earth to view it." />
                     </label>
@@ -462,7 +458,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                         className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                       />
                       <span className="ml-3 text-sm text-green-800 font-medium">
-                        {mapTranslations("flightGeographyKml")}
+                        Flight Geography KML
                       </span>
                       <InfoIconComponent text="Shows only the maximum flight boundaries. Import this kml in Skeyedrone to request your flight." />
                     </label>
@@ -474,10 +470,10 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                 >
                   {hasSelectedOptions
-                    ? `${mapTranslations("downloadSelected")} (${
+                    ? `Download Selected (${
                         Object.values(downloadOptions).filter(Boolean).length
                       })`
-                    : mapTranslations("selectFilesToDownload")}
+                    : "Select files to download"}
                 </button>
               </div>
               {hasSelectedOptions && (
@@ -485,22 +481,22 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                   <div className="flex items-center mb-3">
                     <FaEnvelope className="w-5 h-5 text-blue-600 mr-2" />
                     <h3 className="text-lg font-semibold text-blue-900">
-                      {mapTranslations("sendViaEmail")}
+                      Send via Email
                     </h3>
                   </div>
                   <p className="text-sm text-blue-700 mb-3">
-                    {mapTranslations("emailDataDirectly")}
+                    Email the selected KML files directly to your inbox
                   </p>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-blue-800 mb-2">
-                      {mapTranslations("emailAddress")}
+                      Email Address
                     </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      placeholder={mapTranslations("enterEmailAddress")}
+                      placeholder="Enter email address"
                     />
                   </div>
                   <button
@@ -508,7 +504,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
                     disabled={!email || !hasSelectedOptions}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    {mapTranslations("sendToEmail")}
+                    Send to Email
                   </button>
                 </div>
               )}
