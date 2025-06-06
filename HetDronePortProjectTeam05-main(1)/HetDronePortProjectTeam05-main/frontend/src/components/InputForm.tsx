@@ -28,8 +28,8 @@ import { LateralContingencySection } from "./formSections/LateralContingencySect
 import { VerticalContingencySection } from "./formSections/VerticalContingencySection";
 import { GroundRiskBufferSection } from "./formSections/GroundRiskBufferSection";
 import { LoadConfigurationSection } from "./formSections/LoadConfigurationSection";
-import { FormActionsAndSubmitSection } from "./formSections/FormActionsAndSubmitSection";
-import { clear } from "node:console";
+import { ImportExportSection } from "./formSections/ImportExportSection";
+import { SubmitButton } from "./buttons/submitButton";
 
 type InputFormProps = {
   onCalculate: (response: any) => void;
@@ -484,13 +484,13 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-  className="bg-white p-6 rounded-lg shadow-md m-4 text-gray-800 w-full max-w-2xl space-y-6 overflow-y-scroll max-h-screen border border-gray-200 scrollbar scrollbar-thumb-slate-600
+      className="bg-white p-6 rounded-lg shadow-md m-4 text-gray-800 w-full max-w-2xl space-y-6 overflow-y-scroll max-h-screen border border-gray-200 scrollbar scrollbar-thumb-slate-600
     [&::-webkit-scrollbar-track]:hidden
     [&::-webkit-scrollbar-button]:hidden
     [&::-webkit-scrollbar-thumb]:rounded-full
     [&::-webkit-scrollbar]:w-2"
     
->
+    >
       <div className="border-b border-gray-200 pb-4">
         <h2 className="text-2xl font-bold text-gray-700">
           {form("droneOperationCalculator")}
@@ -499,6 +499,14 @@ const InputForm: React.FC<InputFormProps> = ({
           {form("configureUavParameters")}
         </p>
       </div>
+
+      <ImportExportSection
+        onExport={droneOps.handleExport}
+        onImportClick={droneOps.handleImportClick}
+        fileInputRef={droneOps.fileInputRef as React.RefObject<HTMLInputElement>}
+        onFileChange={droneOps.handleFileChange}
+        isProcessing={droneOps.isProcessing}
+      />
 
       {droneOps.availableDrones.length > 0 && (
         <LoadConfigurationSection
@@ -622,23 +630,29 @@ const InputForm: React.FC<InputFormProps> = ({
         </div>
       )}
 
-      <FormActionsAndSubmitSection
-        onExport={droneOps.handleExport}
-        onImportClick={droneOps.handleImportClick}
-        onSave={droneOps.handleSave}
-        username={username}
-        isSaveDisabled={loading || droneOps.isProcessing}
-        fileInputRef={
-          droneOps.fileInputRef as React.RefObject<HTMLInputElement>
-        }
-        onFileChange={droneOps.handleFileChange}
-        isSubmitting={loading}
-        hasErrors={errors.length > 0}
-        showRecaptcha={showRecaptcha}
-        isRecaptchaVerified={isRecaptchaVerified}
-        hasFormChanged={hasFormChanged || !hasLastSubmission}
-        isEmpty={data === initialDataValues}
-      />
+      {/* Submit Button and Save Drone Section */}
+      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div className="space-x-2 sm:space-x-4">
+          {username && (
+            <button
+              type="button"
+              onClick={droneOps.handleSave}
+              disabled={loading || droneOps.isProcessing}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-3 rounded-md text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {form("saveDrone")}
+            </button>
+          )}
+        </div>
+        <SubmitButton
+          loading={loading}
+          hasErrors={errors.length > 0}
+          showRecaptcha={showRecaptcha}
+          isRecaptchaVerified={isRecaptchaVerified}
+          hasFormChanged={hasFormChanged || !hasLastSubmission}
+          emptyForm={data === initialDataValues}
+        />
+      </div>
     </form>
   );
 };

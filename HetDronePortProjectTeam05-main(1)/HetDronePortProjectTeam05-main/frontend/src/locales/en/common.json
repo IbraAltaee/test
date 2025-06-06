@@ -41,6 +41,11 @@
       "configureUavParameters": "Configure UAV parameters to calculate operational volumes",
       "generalInformation": "General Information",
       "configurationName": "Configuration Name",
+      "configurationManagement": "Configuration Management",
+      "configurationManagementDescription": "Export your current configuration or import a previously saved one to quickly populate the form.",
+      "chooseDroneConfiguration": "Choose a drone",
+      "loadConfigurationTooltip": "Select a drone to automatically populate form fields (flight height excluded)",
+      "droneConfigurationLoadedNotification": "Drone configuration loaded! Note: Flight height still needs to be filled in manually.",
       "uavDetails": "UAV Details",
       "droneType": "Drone Type",
       "droneTypeInfo": "A classification of UAV based on their design and flight characteristics.",
@@ -101,7 +106,8 @@
       "enterLatitude": "Enter latitude",
       "enterLongitude": "Enter longitude",
       "loadDrones": "Load",
-      "loadSavedDrones": "Load Saved Configuration",
+      "loadSavedDrones": "Common Drones",
+      "loadDroneNote": "Load a common drone setup to quickly fill out the form. Most fields are auto-filled, but you must enter the flight height manually based on your operation.",
       "enterUAVDimsFirst": "Enter Max UAV Dimensions first"
 
     },
