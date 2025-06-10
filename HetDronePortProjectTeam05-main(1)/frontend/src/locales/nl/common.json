@@ -42,7 +42,7 @@
       "generalInformation": "Algemene Informatie",
       "configurationName": "Configuratie Naam",
       "configurationManagement": "Configuratie Beheer",
-      "configurationManagementDescription": "Exporteer je huidige configuratie of importeer een eerder opgeslagen configuratie om het formulier snel in te vullen.",
+      "configurationManagementDescription": "Exporteer je huidige configuratie voor later gebruik.",
       "chooseDroneConfiguration": "Kies een drone",
       "loadConfigurationTooltip": "Selecteer een drone om automatisch de meeste formuliervelden in te vullen (vluchthoogte uitgezonderd)",
       "droneConfigurationLoadedNotification": "Drone configuratie geladen! Let op: Vluchthoogte moet nog steeds handmatig worden ingevuld.",
@@ -107,8 +107,21 @@
       "enterLongitude": "Voer lengtegraad in",
       "loadDrones": "Laden",
       "loadSavedDrones": "Veelgebruikte Drones",
-      "loadDroneNote": "Laad een standaard droneconfiguratie om het formulier snel in te vullen. Vluchthoogte moet je zelf opgeven op basis van je operatie.",
-      "enterUAVDimsFirst": "Voer eerst de maximale UAV-afmetingen in"
+      "loadDroneNote": "Laad een veelgebruikte drone in om het formulier snel in te vullen.",
+      "loadDroneNote2": "Vluchthoogte moet je zelf opgeven op basis van je operatie.",
+      "enterUAVDimsFirst": "Voer eerst de maximale UAV-afmetingen in",
+      "quickSetupOptions": "Snelle Configuratie",
+      "importConfiguration": "Configuratie Importeren",
+      "loadCommonDrone": "Standaard Drone Laden", 
+      "importConfigurationFile": "Configuratiebestand Importeren",
+      "importConfigurationDescription": "Upload een eerder geëxporteerd JSON configuratiebestand om alle formulierinstellingen te herstellen.",
+      "chooseFile": "Bestand Kiezen",
+      "loadCommonDroneSetup": "Veelgebruikte Drone Laden",
+      "chooseOptionToQuicklySetup": "Kies een optie hieronder om snel je configuratie in te stellen",
+      "exportNote": "Exporteren", 
+      "exportNoteDescription": "Bewaar je huidige configuratie voor later gebruik",
+      "show": "Aan",
+      "hide": "Uit"
     },
     "droneTypes": {
       "multirotor": "Multirotor",
@@ -156,7 +169,16 @@
       "save": "Opslaan",
       "saving": "Opslaan...",
       "droneDetails": "Drone Details",
-      "general": "Algemeen"
+      "general": "Algemeen",
+      "insufficientPoints": "Onvoldoende Punten",
+      "needAtLeast3Points": "Ten minste 3 punten nodig om zone te tonen",
+      "liveMap": "Live Kaart",
+      "center": "Centrum",
+      "incompleteZone": "Incomplete Zone",
+      "maxHeight": "Max Hoogte",
+      "manageFlightZones": "Beheer je vlucht zones",
+      "noZonesYet": "Nog geen zones",
+      "createFirstZone": "Eerste Zone Aanmaken"
     },
     "zone": {
       "createNewZone": "Nieuwe Zone Aanmaken",
@@ -191,7 +213,6 @@
       "pointIncomplete": "Punt {{index}} is incompleet",
       "pointCannotBe00": "Punt {{index}} kan niet op coördinaten (0,0) zijn",
       "atLeast3CompletePointsRequired": "Ten minste 3 complete punten vereist (huidig: {{count}})",
-      "pleaseFixFollowingIssues": "Los de volgende problemen op:",
       "pleaseFixFormErrorsBeforeSaving": "Los formulierfouten op voordat je opslaat",
       "maxFlightHeight": "Maximale Vluchthoogte"
     },
@@ -404,7 +425,7 @@
     },
     "tooltips": {
       "formDataIdentical": "Formuliergegevens zijn identiek aan de laatste inzending. Wijzig het formulier om opnieuw in te dienen.",
-      "pleaseCompleteRecaptcha": "Voltooi de recaptcha hieronder",
+      "pleaseCompleteRecaptcha": "Voltooi de recaptcha hierboven",
       "pleaseFixFormErrors": "Los eerst formulierfouten op",
       "pleaseFixFormErrorsBeforeSaving": "Los formulierfouten op voordat je opslaat"
     },

@@ -187,7 +187,6 @@ const mapId = useMemo(() => {
 
           {!isFormValid() && (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg">
-              <p className="font-medium">{zoneTranslations("pleaseFixFollowingIssues")}</p>
               <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
                 {getFormErrors().map((formError, index) => (
                   <li key={index}>{formError}</li>

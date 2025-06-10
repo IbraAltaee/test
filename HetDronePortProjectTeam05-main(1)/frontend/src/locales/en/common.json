@@ -42,7 +42,7 @@
       "generalInformation": "General Information",
       "configurationName": "Configuration Name",
       "configurationManagement": "Configuration Management",
-      "configurationManagementDescription": "Export your current configuration or import a previously saved one to quickly populate the form.",
+      "configurationManagementDescription": "Export your current configuration for later use.",
       "chooseDroneConfiguration": "Choose a drone",
       "loadConfigurationTooltip": "Select a drone to automatically populate form fields (flight height excluded)",
       "droneConfigurationLoadedNotification": "Drone configuration loaded! Note: Flight height still needs to be filled in manually.",
@@ -107,10 +107,22 @@
       "enterLongitude": "Enter longitude",
       "loadDrones": "Load",
       "loadSavedDrones": "Common Drones",
-      "loadDroneNote": "Load a common drone setup to quickly fill out the form. Most fields are auto-filled, but you must enter the flight height manually based on your operation.",
-      "enterUAVDimsFirst": "Enter Max UAV Dimensions first"
-
-    },
+      "loadDroneNote": "Load a common drone to quickly fill out the form.",
+      "loadDroneNote2": "You must still enter the flight height manually based on your operation.",
+      "enterUAVDimsFirst": "Enter Max UAV Dimensions first",
+      "quickSetupOptions": "Quick Setup",
+      "importConfiguration": "Import Configuration", 
+      "loadCommonDrone": "Load Common Drone",
+      "importConfigurationFile": "Import Configuration File",
+      "importConfigurationDescription": "Upload a previously exported JSON configuration file to restore all form settings.",
+      "chooseFile": "Choose File",
+      "loadCommonDroneSetup": "Load Common Drone Setup",
+      "chooseOptionToQuicklySetup": "Choose an option below to quickly set up your drone configuration",
+      "exportNote": "Export",
+      "exportNoteDescription": "Save your current configuration for later use",
+      "show": "On",
+      "hide": "Off"
+},
     "droneTypes": {
       "multirotor": "Multirotor",
       "rotorcraft": "Rotorcraft",
@@ -157,7 +169,16 @@
       "save": "Save",
       "saving": "Saving...",
       "droneDetails": "Drone Details",
-      "general": "General"
+      "general": "General",
+      "insufficientPoints": "Insufficient Points",
+      "needAtLeast3Points": "Need at least 3 points to display zone",
+      "liveMap": "Live Map",
+      "center": "Center",
+      "incompleteZone": "Incomplete Zone",
+      "maxHeight": "Max Height",
+      "manageFlightZones": "Manage your flight zones",
+      "noZonesYet": "No zones yet",
+      "createFirstZone": "Create First Zone"
     },
     "zone": {
       "createNewZone": "Create New Zone",
@@ -192,7 +213,6 @@
       "pointIncomplete": "Point {{index}} is incomplete",
       "pointCannotBe00": "Point {{index}} cannot be at coordinates (0,0)",
       "atLeast3CompletePointsRequired": "At least 3 complete points required (current: {{count}})",
-      "pleaseFixFollowingIssues": "Please fix the following issues:",
       "pleaseFixFormErrorsBeforeSaving": "Please fix form errors before saving",
       "maxFlightHeight": "Max flight Height"
     },
@@ -405,7 +425,7 @@
     },
     "tooltips": {
       "formDataIdentical": "Form data is identical to the last submission. Please modify the form to submit again.",
-      "pleaseCompleteRecaptcha": "Please complete the recaptcha below",
+      "pleaseCompleteRecaptcha": "Please complete the recaptcha",
       "pleaseFixFormErrors": "Please fix form errors first",
       "pleaseFixFormErrorsBeforeSaving": "Please fix form errors before saving"
     },
