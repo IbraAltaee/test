@@ -1,5 +1,6 @@
 package droneportTeam05.repository;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,8 @@ import jakarta.annotation.PostConstruct;
 
 @Component
 public class DbInitializer {
+        @Value("${admin.user}") String username;
+        @Value("${admin.password}") String password;
 
         private final AdminRepository adminRepository;
 
@@ -19,10 +22,9 @@ public class DbInitializer {
         @PostConstruct
         public void initialize() {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            String username = "stijn";
             
             if (!adminRepository.existsByUsername(username)) {
-                Admin admin = new Admin(username, encoder.encode("t"));
+                Admin admin = new Admin(username, encoder.encode(password));
                 adminRepository.save(admin);
             }
         }

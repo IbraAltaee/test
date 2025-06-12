@@ -1,0 +1,47 @@
+# Stage 1: Build the application
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the Maven project files
+COPY pom.xml .
+COPY src ./src
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jdk-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built jar from the previous stage
+COPY --from=builder /app/target/*.jar app.jar
+
+RUN mkdir -p config
+RUN printf "spring.application.name=Droneport project\n" >> config/application.properties 
+RUN printf "spring.mail.username=droneportgroep5@gmail.com\n" >> config/application.properties 
+RUN printf "spring.mail.properties.mail.smtp.starttls.required=true\n" >> config/application.properties 
+RUN printf "spring.mail.host=smtp.gmail.com\n" >> config/application.properties 
+RUN printf "spring.mail.port=587\n" >> config/application.properties 
+RUN printf "spring.mail.password=SuperSecretKey\n" >> config/application.properties 
+RUN printf "spring.mail.properties.mail.smtp.auth=true\n" >> config/application.properties 
+RUN printf "spring.mail.properties.mail.transport.protocol=smtp\n" >> config/application.properties 
+RUN printf "spring.mail.properties.mail.smtp.starttls.enable=true\n" >> config/application.properties 
+RUN printf "spring.datasource.url=jdbc:postgresql://postgres:5432/Droneport\n" >> config/application.properties 
+RUN printf "spring.datasource.username=postgres\n" >> config/application.properties 
+RUN printf "spring.datasource.password=SuperSecretKey\n" >> config/application.properties 
+RUN printf "spring.jpa.hibernate.ddl-auto=update\n" >> config/application.properties 
+RUN printf "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect\n" >> config/application.properties 
+RUN printf "token.secret.key=SuperSecretKey" >> config/application.properties
+RUN printf "endpoints.cors.allowed-origins=http://localhost:3000" >> config/application.properties
+RUN printf "admin.user=test" >> config/application.properties
+RUN printf "admin.password=test" >> config/application.properties
+
+# Expose port 8080
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]

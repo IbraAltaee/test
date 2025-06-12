@@ -13,7 +13,14 @@ RUN npm install
 # Copy source files
 COPY . .
 
-# Build the Next.js app
+# SET ENVIRONMENT VARIABLES **BEFORE** BUILDING
+ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=SuperSecretKey
+ENV NEXT_PUBLIC_DRONEPORT_EMAIL=droneportgroep5@gmail.com
+ENV NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api
+ENV NEXT_PUBLIC_RECAPTCHA_SITE_KEY=SuperSecretKey
+ENV RECAPTCHA_SECRET_KEY=SuperSecretKey
+
+# Build the Next.js app (THIS IS WHEN NEXT.JS NEEDS THE ENV VARS)
 RUN npm run build
 
 # Stage 2: Run the app
@@ -30,11 +37,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/tsconfig.json ./
 
-RUN echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=SuperSecretKey" > .env
-RUN echo "NEXT_PUBLIC_DRONEPORT_EMAIL=email" >> .env
-RUN echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api" >> .env
-RUN echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=SuperSecretKey" >> .env 
-RUN echo "RECAPTCHA_SECRET_KEY=SuperSecretKey" >> .env 
 
 # Expose port
 EXPOSE 3000

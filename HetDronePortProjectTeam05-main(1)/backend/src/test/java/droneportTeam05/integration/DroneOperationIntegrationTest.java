@@ -39,26 +39,21 @@ public class DroneOperationIntegrationTest {
     
     @BeforeEach
     public void setup() {
-        // Setup UAVs
         multirotorUAV = new UAV(UAVType.MULTIROTOR, 10, 2, "barometric", 3, 3, 1, 1);
         fixedWingUAV = new UAV(UAVType.FIXEDWING, 30, 3, "barometric", 3, 3, 1, 1);
         
-        // Setup Lateral Contingency Volumes
         stoppingLCV = LateralContingencyVolume.forStopping(45);
         turn180LCV = LateralContingencyVolume.forTurn180(30);
         parachuteLCV = LateralContingencyVolume.forParachute(5);
         
-        // Setup Vertical Contingency Volumes
         energyConversionVCV = VerticalContingencyVolume.forEnergyConversion();
         circularPathVCV = VerticalContingencyVolume.forCircularPath();
         parachuteVCV = VerticalContingencyVolume.forParachute(5);
         
-        // Setup Ground Risk Buffers
         ballisticGRB = GroundRiskBuffer.forBallistic();
         parachuteGRB = GroundRiskBuffer.forParachute(5, 10, 3);
         glidingGRB = GroundRiskBuffer.forGliding(20);
         
-        // Setup Flight Geography
         flightGeography = new FlightGeography(100, 10, 10);
     }
     
