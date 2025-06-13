@@ -20,37 +20,7 @@ const PointList: React.FC<PointListProps> = ({
 }) => {
   const { zone: zoneTranslations, form, validation, common } = useTranslations();
   const [pointErrors, setPointErrors] = useState<{ [key: string]: string }>({});
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
-
-    const isValidPartialInput = (value: string): boolean => {
-    // Allow empty, just minus sign, or valid decimal patterns
-    if (value === '' || value === '-') return true;
-    
-    // Allow numbers with decimal point at the end: "50."
-    if (/^-?\d+[.,]$/.test(value)) return true;
-    
-    // Allow complete decimal numbers: "50.123"
-    if (/^-?\d+([.,]\d+)?$/.test(value)) return true;
-    
-    // Allow decimal point at start: ".123"
-    if (/^-?[.,]\d*$/.test(value)) return true;
-    
-    return false;
-  };
-
-  const normalizeCoordinate = (value: string): number | null => {
-    if (
-      value === "" ||
-      value === "-" ||
-      value.endsWith(".") ||
-      value.endsWith(",")
-    ) {
-      return null;
-    }
-    const normalizedValue = value.replace(",", ".");
-    const num = parseFloat(normalizedValue);
-    return isNaN(num) ? null : num;
-  };
+  const [inputValues, setInputValues] = useState<{ [key: string]: number | null }>({});
 
   const validateFinalCoordinate = (
     value: number,
@@ -130,7 +100,7 @@ const PointList: React.FC<PointListProps> = ({
     delete newInputValues[`${index}-lng`];
 
     const adjustedErrors: { [key: string]: string } = {};
-    const adjustedInputValues: { [key: string]: string } = {};
+    const adjustedInputValues: { [key: string]: number | null } = {};
 
     Object.entries(newErrors).forEach(([key, value]) => {
       const [pointIndex, field] = key.split("-");
@@ -164,7 +134,7 @@ const PointList: React.FC<PointListProps> = ({
   const handleInputChange = (
     index: number,
     field: "lat" | "lng",
-    value: string,
+    value: number,
   ) => {
     if (!onZoneChange) return;
 
@@ -175,16 +145,10 @@ const PointList: React.FC<PointListProps> = ({
       [inputKey]: value,
     }));
 
-    if (!isValidPartialInput(value)) {
-      return;
-    }
-
-    const coordinateValue = normalizeCoordinate(value);
-
     const newPath = [...zone.path];
     newPath[index] = {
       ...newPath[index],
-      [field]: coordinateValue,
+      [field]: value,
     };
 
     onZoneChange({
@@ -195,8 +159,8 @@ const PointList: React.FC<PointListProps> = ({
     const errorKey = `${index}-${field}`;
     const newErrors = { ...pointErrors };
 
-    if (coordinateValue !== null) {
-      const error = validateFinalCoordinate(coordinateValue, field);
+    if (value !== null) {
+      const error = validateFinalCoordinate(value, field);
       if (error) {
         newErrors[errorKey] = error;
       } else {
@@ -229,13 +193,13 @@ const PointList: React.FC<PointListProps> = ({
     value: number | null,
     index: number,
     field: "lat" | "lng",
-  ): string => {
+  ): number | null => {
     const inputKey = `${index}-${field}`;
-    if (inputValues[inputKey] !== undefined) {
+    if (inputValues[inputKey] !== undefined && inputValues[inputKey] !== null) {
       return inputValues[inputKey];
     }
 
-    return value !== null ? value.toString() : "";
+    return value;
   };
 
   return (
@@ -266,12 +230,11 @@ const PointList: React.FC<PointListProps> = ({
                   </label>
                   {editable ? (
                     <input
-                      type="text"
+                      type="number"
                       inputMode="decimal"
-                      pattern="[0-9.,-]*"
-                      value={getDisplayValue(point.lat, index, "lat")}
+                      value={getDisplayValue(point.lat, index, "lat") || ""}
                       onChange={(e) =>
-                        handleInputChange(index, "lat", e.target.value)
+                        handleInputChange(index, "lat", parseFloat(e.target.value))
                       }
                       className={getInputClassName(index, "lat")}
                       placeholder={form("enterLatitude")}
@@ -286,13 +249,11 @@ const PointList: React.FC<PointListProps> = ({
                   </label>
                   {editable ? (
                     <input
-                      type="text"
+                      type="number"
                       inputMode="decimal"
-                      pattern="[0-9.,-]*"
-                      autoComplete="off"
-                      value={getDisplayValue(point.lng, index, "lng")}
+                      value={getDisplayValue(point.lng, index, "lng") || ""}
                       onChange={(e) =>
-                        handleInputChange(index, "lng", e.target.value)
+                        handleInputChange(index, "lng", parseFloat(e.target.value))
                       }
                       className={getInputClassName(index, "lng")}
                       placeholder={form("enterLongitude")}

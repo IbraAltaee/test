@@ -39,6 +39,7 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
   const [insetPolygons, setInsetPolygons] = useState<any[]>([]);
   const [selectedPolygon, setSelectedPolygon] = useState<Zone>(zone);
   const [zonePath, setZonePath] = useState<google.maps.LatLngLiteral[]>();
+  const [sendEmail, setSendEmail] = useState<boolean>(false);
 
   const { map: mapTranslations, notifications } = useTranslations();
 
@@ -47,6 +48,18 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
       .filter((point) => point.lat !== null && point.lng !== null)
       .map((point) => ({ lat: point.lat!, lng: point.lng! }));
   };
+
+  useEffect(() => {
+    const fetchSwitchState = async () => {
+      try {
+        const response = await EmailService.getSwitchState();
+        setSendEmail(response);
+      } catch (err: any) {
+        console.error("Failed to fetch switch state:", err);
+      }
+    };
+    fetchSwitchState();
+  }, []);
 
   useEffect(() => {
     setSelectedPolygon(zone);
@@ -279,13 +292,15 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
       subject: "Your KML File",
       files: [...kmlFiles, pdf],
     });
-    const success2 = await EmailService.sendEmailNotification({
-      to: process.env.NEXT_PUBLIC_DRONEPORT_EMAIL!,
-      subject: "A new flight request has been generated",
-      body: generateEmailBody(data),
-      files: [...kmlFiles, pdf],
-    });
-    if (success && success2) {
+    if (sendEmail) {
+      EmailService.sendEmailNotification({
+        to: process.env.NEXT_PUBLIC_DRONEPORT_EMAIL!,
+        subject: "A new flight request has been generated",
+        body: generateEmailBody(data),
+        files: [...kmlFiles, pdf],
+      });
+    }
+    if (success) {
       toast.success(notifications("emailSentSuccessfully"));
     } else {
       toast.error(notifications("failedToSendEmail"));
@@ -313,12 +328,14 @@ const MapWithSquare: React.FC<MapWithSquareProps> = ({ data, zone }) => {
       }
     }
     const pdf: File = await EmailService.generatePDFFile(data);
+    if (sendEmail) {
     EmailService.sendEmailNotification({
       to: process.env.NEXT_PUBLIC_DRONEPORT_EMAIL!,
       subject: "A new flight request has been generated",
       body: generateEmailBody(data),
       files: [...kmlFiles, pdf],
     });
+    }
   };
 
   const handleCheckboxChange = (option: keyof typeof downloadOptions) => {

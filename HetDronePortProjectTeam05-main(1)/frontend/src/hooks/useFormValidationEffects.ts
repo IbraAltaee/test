@@ -95,7 +95,7 @@ export const useFormValidationEffects = ({
   useEffect(() => {
     const { maxUavDimensions, heightFlight } = data;
     const fieldName = "heightFlight";
-    const ruleSpecificErrorPrefix = "Height must be at least 3×";
+    const ruleSpecificErrorPrefix = validation("heightMustBeAtLeast3CD")
     let newMessage: string | null = null;
 
     if (

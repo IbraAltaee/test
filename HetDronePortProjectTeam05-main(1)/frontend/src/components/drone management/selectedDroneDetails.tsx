@@ -3,7 +3,7 @@ import { getAltitudeOptions, getDroneTypes } from "@/constants/options";
 import { useTranslations } from "@/hooks/useTranslations";
 import { useAuth } from "@/providers/AuthProvider";
 import DroneOperationService from "@/services/droneOperationService";
-import { droneService } from "@/services/droneService";
+import DroneService from "@/services/droneService";
 import { Drone } from "@/types/drone";
 import React, { useEffect, useState } from "react";
 import { FaCheck, FaEdit, FaSpinner, FaTrash } from "react-icons/fa";
@@ -17,10 +17,10 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
-  const [confirmDeleteDrone, setConfirmDeleteDrone] = useState<string | null>(null);
-  
-
-  const { isAuthenticated } = useAuth();
+  const [confirmDeleteDrone, setConfirmDeleteDrone] = useState<string | null>(
+    null,
+  );
+  const { token } = useAuth();
   const { droneManagement, common, dashboard, notifications, t } = useTranslations();
 
   const droneTypes = getDroneTypes(t);
@@ -46,15 +46,10 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
 
   const handleSave = async () => {
     if (!editableDrone) return;
-    if (!isAuthenticated) {
-      toast.error("Please log in to save changes");
-      return;
-    }
-    
+    if (!token) return;
     try {
       setIsSaving(true);
-      // Updated to use new droneService without token
-      await droneService.updateDrone(drone.name, editableDrone);
+      await DroneService.updateDrone(editableDrone, drone.name, token);
       toast.success(notifications("droneSavedSuccessfully"));
       setIsEditing(false);
       onUpdate();
@@ -87,7 +82,6 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
             )
           }
           className="mt-1 border border-gray-300 rounded-lg p-2 w-full max-w-sm focus:ring-blue-500 focus:border-blue-500 transition"
-          disabled={!isAuthenticated}
         />
       ) : (
         <p className="mt-1 text-gray-800">{value}</p>
@@ -108,7 +102,6 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
           value={value ?? ""}
           onChange={(e) => handleChange(path, e.target.value)}
           className="mt-1 border border-gray-300 rounded-lg p-2 w-full max-w-sm focus:ring-blue-500 focus:border-blue-500 transition"
-          disabled={!isAuthenticated}
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -133,17 +126,15 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
             {!isEditing ? (
               <div className="flex space-x-3">
                 <button
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded flex items-center gap-3"
                   onClick={() => setIsEditing(true)}
-                  disabled={!isAuthenticated}
                 >
                   <FaEdit />
                   <span>{common("edit")}</span>
                 </button>
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded flex items-center gap-3"
                   onClick={() => setConfirmDeleteDrone(editableDrone.name)}
-                  disabled={!isAuthenticated}
                 >
                   <FaTrash />
                   <span>{common("delete")}</span>
@@ -159,8 +150,8 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
                 </button>
                 <button
                   onClick={handleSave}
-                  disabled={isSaving || !isAuthenticated}
-                  className="flex px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition gap-3 items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSaving}
+                  className="flex px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition gap-3 items-center"
                 >
                   {isSaving ? <FaSpinner /> : <FaCheck />}
                   {isSaving ? common("saving") : common("save")}
@@ -169,17 +160,10 @@ const SelectedDroneDetails: React.FC<{ drone: Drone; onUpdate: any }> = ({
             )}
           </div>
 
-          {!isAuthenticated && (
-            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg">
-              Please log in to edit or delete drones.
-            </div>
-          )}
-
           {saveMessage && (
             <p className="text-sm text-gray-500 italic">{saveMessage}</p>
           )}
 
-          {/* Rest of the component remains the same - all the sections */}
           <section className="bg-white p-6 rounded-xl shadow-md">
             <h3 className="text-xl font-semibold mb-4">{dashboard("general")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

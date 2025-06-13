@@ -16,6 +16,12 @@
       "adminDashboard": "Admin Dashboard"
     },
     "intro": {
+      "explanationTitle": "Explanation of the UAS Zone Guidance Tool (ZGT) – Droneport",
+      "explanationMessage1": "The UAS Zone Guidance Tool (ZGT) assists drone operators in calculating the flight geography, the contingency volume (lateral and vertical), and the associated ground risk buffer for flights within one of the EBR zones at Droneport.",
+      "explanationMessage2": "Based on UAS characteristics and flight altitude, the tool generates a .KML file with a visual representation of the calculated volumes within the selected zone. The calculations follow the methodology of the German Luftfahrt-Bundesamt, which is also recognized by the Belgian Directorate General of Civil Aviation (DGLV).",
+      "whyTitle": "Why use it?",
+      "whyMessage1": "The ZGT supports you in preparing your flight, and the generated .KML file can be uploaded into the SkeyDrone application when submitting your request to the Droneport Geozone Manager.",
+      "whyMessage2": "Note: The ZGT is a tool that assists with the technical preparation of your operation. In case of flights in the ‘specific category,’ you as an operator still need to obtain an operational authorization from the Directorate General of Civil Aviation (DGLV).",
       "welcomeMessage": "Welcome to the advanced drone operations calculator. Configure your UAV parameters below to calculate precise operational volumes including flight geography, contingency volumes, and ground risk buffers."
     },
     "emailConfig": {
@@ -34,7 +40,9 @@
       "bodyCannotBeEmpty": "Email body cannot be empty",
       "templateSavedSuccessfully": "Email template saved successfully!",
       "failedToSaveTemplate": "Failed to save email template",
-      "failedToLoadTemplate": "Failed to load email template"
+      "failedToLoadTemplate": "Failed to load email template",
+      "toggleButtonLabel": "Enable/Disable Email Configuration",
+      "toggleButtonDescription": "Enable or disable email notifications sent to the control tower."
     },
     "form": {
       "droneOperationCalculator": "Drone Operation Calculator",

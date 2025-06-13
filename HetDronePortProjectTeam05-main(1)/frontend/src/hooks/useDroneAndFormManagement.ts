@@ -4,7 +4,7 @@ import { getDroneTypes } from "@/constants/options";
 import { useTranslations } from "@/hooks/useTranslations";
 import { useAuth } from "@/providers/AuthProvider";
 import InternalDroneOperationService from "@/services/droneOperationService";
-import { droneService } from "@/services/droneService";
+import DroneService from "@/services/droneService";
 import ExportService from "@/services/exportService";
 import { Drone } from "@/types/drone";
 import {
@@ -41,7 +41,7 @@ export const useDroneAndFormManagement = ({
   isFormInputValid,
   buildFormStateObject,
 }: UseDroneAndFormManagementProps) => {
-  const { username, isAuthenticated } = useAuth();
+  const { username, token } = useAuth();
   const { notifications, validation, t } = useTranslations();
   
   const [drones, setDrones] = useState<Drone[]>([]);
@@ -55,7 +55,7 @@ export const useDroneAndFormManagement = ({
   useEffect(() => {
     const fetchDronesAsync = async () => {
       try {
-        const fetchedDrones = await droneService.getAllDrones();
+        const fetchedDrones = await DroneService.fetchDrones();
         setDrones(fetchedDrones);
         setAvailableDrones(
           fetchedDrones.map((d) => ({ value: d.name, label: d.name })),
@@ -275,7 +275,7 @@ export const useDroneAndFormManagement = ({
   );
 
   const handleSave = useCallback(async () => {
-    if (!username || !isAuthenticated) {
+    if (!username || !token) {
       toast.error(validation("pleaseLoginToSave"));
       return;
     }
@@ -337,9 +337,9 @@ export const useDroneAndFormManagement = ({
 
     setIsProcessing(true);
     try {
-      await droneService.createDrone(droneConfig);
+      await DroneService.createDrone(droneConfig, token);
       toast.success(notifications("configurationSavedSuccessfully"));
-      const fetchedDrones = await droneService.getAllDrones();
+      const fetchedDrones = await DroneService.fetchDrones();
       setDrones(fetchedDrones);
       setAvailableDrones(
         fetchedDrones.map((d) => ({ value: d.name, label: d.name })),
@@ -352,7 +352,7 @@ export const useDroneAndFormManagement = ({
     } finally {
       setIsProcessing(false);
     }
-  }, [username, isAuthenticated, isFormInputValid, configName, buildFormStateObject, validation, notifications]);
+  }, [username, token, isFormInputValid, configName, buildFormStateObject, validation, notifications]);
 
   return {
     availableDrones,

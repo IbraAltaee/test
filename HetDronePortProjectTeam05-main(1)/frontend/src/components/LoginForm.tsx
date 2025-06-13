@@ -28,37 +28,23 @@ const LoginForm: React.FC = () => {
     return result;
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
 
-  // Input validation
-  if (!username?.trim()) {
-    setError(auth("usernameCannotBeEmpty"));
-    return;
-  }
-  if (!password?.trim()) {
-    setError(auth("passwordCannotBeEmpty"));
-    return;
-  }
-
-  const sanitizedUsername = username.trim().replace(/[^\w]/g, "");
-  if (sanitizedUsername !== username.trim()) {
-    setError("Username contains invalid characters");
-    return;
-  }
-
-  try {
-    await login(sanitizedUsername, password);
-    toast.success(auth("loginSuccessful"));
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1000);
-  } catch (err: any) {
-    console.error("Login failed:", err);
-    setError(err.message || auth("loginFailed"));
-  }
-};
+    if (!validate()) {
+      return;
+    }
+    try {
+      await login(username, password);
+      toast.success(auth("loginSuccessful"));
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } catch (err) {
+      setError(auth("loginFailed"));
+    }
+  };
 
   return (
     <form

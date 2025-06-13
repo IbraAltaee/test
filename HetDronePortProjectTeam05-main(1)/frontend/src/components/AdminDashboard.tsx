@@ -1,19 +1,17 @@
 "use client";
 
+import DroneTable from "@/components/drone management/droneTable";
+import { useTranslations } from "@/hooks/useTranslations";
+import { useAuth } from "@/providers/AuthProvider";
 import { zoneService } from "@/services/ZoneService";
-import { droneService } from "@/services/droneService";
-import EmailService from "@/services/EmailService";
 import { Zone } from "@/types/zone";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import EmailConfig from "./email configuration/EmailConfig";
+import DeleteConfirmationModal from "./zone management/DeleteConfirmationModal";
+import ZoneForm from "./zone management/ZoneForm";
 import ZoneList from "./zone management/ZoneList";
 import ZoneView from "./zone management/ZoneView";
-import ZoneForm from "./zone management/ZoneForm";
-import DeleteConfirmationModal from "./zone management/DeleteConfirmationModal";
-import React, { useState, useEffect } from "react";
-import DroneTable from "@/components/drone management/droneTable";
-import { useAuth } from "@/providers/AuthProvider";
-import EmailConfig from "./email configuration/EmailConfig";
-import { useTranslations } from "@/hooks/useTranslations";
 
 type ViewMode = "list" | "view" | "edit" | "create";
 type TabMode = "drones" | "zones" | "email-config";
@@ -22,12 +20,10 @@ const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabMode>("zones");
   const [currentView, setCurrentView] = useState<ViewMode>("list");
 
-  // Data state
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Zone operation state
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
   const [formZone, setFormZone] = useState<Zone>({
     name: "",
@@ -36,7 +32,7 @@ const AdminDashboard: React.FC = () => {
   });
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const { isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const { dashboard, notifications, validation, emailConfig } = useTranslations();
 
   useEffect(() => {
@@ -88,6 +84,28 @@ const AdminDashboard: React.FC = () => {
       errors.push(validation("atLeast3ValidPointsRequired", { count: validPoints.length }));
     }
 
+    const incompletePoints = zone.path.filter(
+      (point) =>
+        (point.lat === null && point.lng !== null) ||
+        (point.lat !== null && point.lng === null),
+    );
+
+    if (incompletePoints.length > 0) {
+      incompletePoints.forEach((_, index) => {
+        errors.push(validation("pointIncomplete", { index: index + 1 }));
+      });
+    }
+
+    const defaultPoints = zone.path.filter(
+      (point) => point.lat === 0 || point.lng === 0,
+    );
+
+    if (defaultPoints.length > 0) {
+      defaultPoints.forEach((_, index) => {
+        errors.push(validation("pointCannotBe00", { index: index + 1 }));
+      });
+    }
+
     return {
       isValid: errors.length === 0,
       errors,
@@ -121,8 +139,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleSaveZone = async () => {
-    if (!isAuthenticated) return;
-    
+    if (!token) return;
     const validation = validateZone(formZone);
     if (!validation.isValid) {
       setError(validation.errors.join(", "));
@@ -134,10 +151,10 @@ const AdminDashboard: React.FC = () => {
       setError(null);
 
       if (currentView === "create") {
-        await zoneService.createZone(formZone);
+        await zoneService.createZone(formZone, token);
         toast.success(notifications("zoneCreatedSuccessfully"));
       } else if (currentView === "edit" && selectedZone) {
-        await zoneService.updateZone(selectedZone.name, formZone);
+        await zoneService.updateZone(selectedZone.name, formZone, token);
         toast.success(notifications("zoneUpdatedSuccessfully"));
       }
 
@@ -152,16 +169,17 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteZone = async () => {
-    if (!deleteTarget || !isAuthenticated) return;
+    if (!deleteTarget) return;
+    if (!token) return;
 
     try {
       setLoading(true);
-      await zoneService.deleteZone(deleteTarget);
+      await zoneService.deleteZone(deleteTarget, token);
       setDeleteTarget(null);
       await loadZones();
       toast.success(notifications("zoneDeletedSuccessfully"));
     } catch (err: any) {
-      const errorMsg = err.message || "Failed to delete zone";
+      const errorMsg = err.message || notifications("failedToDeleteZone");
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {

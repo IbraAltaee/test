@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { FaSpinner, FaTimesCircle } from "react-icons/fa";
 import { useTranslations } from "@/hooks/useTranslations";
+import Switch from "react-switch";
+import {InfoIconComponent} from "@/components/infoIcon";
 
 const EmailConfig: React.FC = () => {
   const [emailSubject, setEmailSubject] = useState<string>("");
@@ -11,27 +13,21 @@ const EmailConfig: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  const { isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const { emailConfig, common } = useTranslations();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadEmailTemplate();
-    }
-  }, [isAuthenticated]);
+    fetchSwitchState();
+    loadEmailTemplate();
+  }, []);
 
   const loadEmailTemplate = async () => {
-    if (!isAuthenticated) {
-      setError(emailConfig("authenticationRequired"));
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);
-      
-      const response: any = await EmailService.getTemplate();
+      const response = await EmailService.getTemplate();
       setEmailSubject(
         response.subject ? response.subject.replace(/\\n/g, "\n") : "",
       );
@@ -43,6 +39,15 @@ const EmailConfig: React.FC = () => {
       toast.error(errorMsg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSwitchState = async () => {
+    try {
+      const response = await EmailService.getSwitchState();
+      setIsSwitchOn(response);
+    } catch (err: any) {
+      console.error("Failed to fetch switch state:", err);
     }
   };
 
@@ -59,7 +64,7 @@ const EmailConfig: React.FC = () => {
   };
 
   const handleSaveChanges = async () => {
-    if (!isAuthenticated) {
+    if (!token) {
       setError(emailConfig("authenticationRequired"));
       return;
     }
@@ -78,8 +83,10 @@ const EmailConfig: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Updated to use ApiClient (no token needed)
-      await EmailService.updateTemplate(emailSubject, emailBody);
+      const response = await EmailService.updateTemplate(emailSubject, emailBody, token);
+      if (!response) {
+        throw new Error(emailConfig("failedToSaveTemplate"));
+      }
 
       setHasChanges(false);
       toast.success(emailConfig("templateSavedSuccessfully"));
@@ -96,23 +103,19 @@ const EmailConfig: React.FC = () => {
     loadEmailTemplate();
   };
 
-  // Show message if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6">
-          <div className="text-center py-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {emailConfig("emailConfiguration")}
-            </h2>
-            <p className="text-gray-600">
-              {emailConfig("authenticationRequired")}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const toggleSwitch = async (checked: boolean) => {
+    if (!token) {
+      setError(emailConfig("authenticationRequired"));
+      return;
+    }
+
+    try {
+      await EmailService.updateSwitchState(checked, token);
+      setIsSwitchOn(checked);
+    } catch (err: any) {
+      console.error("Failed to update switch state:", err);
+    }
+  };
 
   if (loading && !emailBody && !emailSubject) {
     return (
@@ -130,17 +133,26 @@ const EmailConfig: React.FC = () => {
   }
 
   return (
+      <>
+        <div className="flex items-center justify-between mb-4">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {emailConfig("emailConfiguration")}
+            </h2>
+            <p className="text-gray-600 text-sm">
+              {emailConfig("configureDefaultEmailTemplate")}
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
+              <span>{emailConfig("toggleButtonLabel")}</span>
+              <InfoIconComponent text={emailConfig("toggleButtonDescription")}/>
+            </div>
+            <Switch onChange={toggleSwitch} checked={isSwitchOn}/>
+          </div>
+        </div>
     <div className="bg-white rounded-lg shadow">
       <div className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            {emailConfig("emailConfiguration")}
-          </h2>
-          <p className="text-gray-600 text-sm">
-            {emailConfig("configureDefaultEmailTemplate")}
-          </p>
-        </div>
-
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <div className="flex">
@@ -167,9 +179,9 @@ const EmailConfig: React.FC = () => {
               type="text"
               value={emailSubject}
               onChange={(e) => handleSubjectChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder={emailConfig("enterDefaultEmailSubject")}
-              disabled={loading || !isAuthenticated}
+              disabled={loading}
             />
             <p className="mt-2 text-sm text-gray-500">
               {emailConfig("subjectTemplateDescription")}
@@ -188,9 +200,9 @@ const EmailConfig: React.FC = () => {
               rows={12}
               value={emailBody}
               onChange={(e) => handleBodyChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-vertical disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-vertical"
               placeholder={emailConfig("enterDefaultEmailBody")}
-              disabled={loading || !isAuthenticated}
+              disabled={loading}
             />
             <p className="mt-2 text-sm text-gray-500">
               {emailConfig("bodyTemplateDescription")}
@@ -202,9 +214,9 @@ const EmailConfig: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSaveChanges}
-                disabled={loading || !hasChanges || !isAuthenticated}
+                disabled={loading || !hasChanges}
                 className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                  loading || !hasChanges || !isAuthenticated
+                  loading || !hasChanges
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
                 }`}
@@ -223,7 +235,7 @@ const EmailConfig: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleReset}
-                  disabled={loading || !isAuthenticated}
+                  disabled={loading}
                   className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {common("cancel")}
@@ -240,6 +252,7 @@ const EmailConfig: React.FC = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

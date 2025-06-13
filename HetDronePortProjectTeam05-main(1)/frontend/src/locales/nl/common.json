@@ -16,6 +16,12 @@
       "adminDashboard": "Admin Dashboard"
     },
     "intro": {
+      "explanationTitle": "Toelichting bij de UAS Zone Guidance Tool (ZGT) – Droneport",
+      "explanationMessage1": "De UAS Zone Guidance Tool (ZGT) helpt drone-operatoren bij het berekenen van de flight geography, het contingency volume (lateraal en verticaal) en de bijhorende ground risk buffer voor vluchten binnen één van de EBR-zones op Droneport.",
+      "explanationMessage2": "Op basis van UAS-kenmerken en vlieghoogte genereert de tool een .KML-bestand met een visuele weergave van de berekende volumes binnen de gekozen zone. De berekeningen volgen de methodologie van het Duitse Luftfahrt-Bundesamt, die ook gekend is bij het Belgische Directoraat-Generaal Luchtvaart (DGLV).",
+      "whyTitle": "Waarom gebruiken?",
+      "whyMessage1": "De ZGT ondersteunt je bij het voorbereiden van je vlucht en het gegenereerde .KML-bestand kan worden opgeladen in de SkeyDrone-applicatie bij het indienen van je aanvraag aan de Droneport Geozone Manager.",
+      "whyMessage2": "Let op: de ZGT is een hulpmiddel dat je ondersteunt bij de technische voorbereiding van je operatie. In geval van vluchten in de ‘specific category’ moet je als operator nog steeds een operationele autorisatie verkrijgen van het Directoraat-Generaal Luchtvaart (DGLV).",
       "welcomeMessage": "Welkom bij de geavanceerde drone operatie calculator. Configureer hieronder uw UAV parameters om precieze operationele volumes te berekenen, waaronder vluchtgeografie, noodvolumes en grondrisico buffers."
     },
     "emailConfig": {
@@ -34,7 +40,9 @@
       "bodyCannotBeEmpty": "Email body kan niet leeg zijn",
       "templateSavedSuccessfully": "Email sjabloon succesvol opgeslagen!",
       "failedToSaveTemplate": "Opslaan van email sjabloon mislukt",
-      "failedToLoadTemplate": "Laden van email sjabloon mislukt"
+      "failedToLoadTemplate": "Laden van email sjabloon mislukt",
+      "toggleButtonLabel": "Schakel email meldingen aan of uit",
+      "toggleButtonDescription": "Schakel deze knop in of uit om de email meldingen aan de controletoren te activeren of deactiveren. Wanneer uitgeschakeld, worden er geen emails verzonden."
     },
     "form": {
       "droneOperationCalculator": "Drone Operatie Calculator",

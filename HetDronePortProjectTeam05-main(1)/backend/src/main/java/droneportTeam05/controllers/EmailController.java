@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +32,6 @@ public class EmailController {
     public EmailController(EmailTemplateService emailTemplateService) {
         this.emailTemplateService = emailTemplateService;
     }
-    
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(
             @RequestParam("to") String to,
@@ -62,8 +60,7 @@ public class EmailController {
         return emailTemplateService.getTemplate();
     }
 
-    @PutMapping("/admin/template")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/template")
     public String updateTemplate(
             @RequestParam("body") String body,
             @RequestParam("subject") String subject) {

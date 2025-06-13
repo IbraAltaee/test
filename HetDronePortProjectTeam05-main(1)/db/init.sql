@@ -148,17 +148,21 @@ CREATE TABLE IF NOT EXISTS email_templates (
 
 INSERT INTO email_templates (name, body, subject) VALUES (
     'default',
-    'Beste,
+    'Dear user, 
+    
+Thank you for using the UAS Zone Guidance Tool (ZGT) from Droneport. 
 
-Hartelijk dank voor je aanvraag om gebruik te maken van het luchtruim boven DronePort.
+Attached you will find: 
+- the .KML file with a visual representation of the calculated flight geography, contingency volume, and ground risk buffer within the selected EBR zone; 
+- a PDF file with the detailed calculation results based on the entered parameters. 
 
-In de bijlage vind je de KML-bestanden die je kunt gebruiken om de flight geography in te geven via het SkeyDrone-platform. Deze bestanden bevatten de nodige geografische zones waarin het droneverkeer gepland kan worden.
+You can upload the KML file into the SkeyDrone application when applying for a flight within the Droneport geozone. 
 
-Gelieve deze bestanden correct te uploaden bij het aanmaken van je operationele aanvraag in SkeyDrone. Indien je tijdens dit proces vragen hebt of ondersteuning nodig hebt, aarzel dan niet om ons te contacteren.
+Please note: this tool is intended to support your flight preparation. If your operation falls under the ‘specific category,’ you must still obtain operational authorization from the Directorate General of Civil Aviation (DGLV). For questions or feedback, you can contact us via info@droneport.eu.
 
-Met vriendelijke groet,
-DronePort',
-    'Flight Geography – KML-bestanden voor aanvraag Droneport'
+Kind regards,
+The Droneport Team',
+    'Your calculation via the UAS Zone Guidance Tool (ZGT) – Droneport'
 );
 
 -- UAV table
@@ -259,7 +263,7 @@ vcv_data AS (
     height_contingency_manoeuvre, min_vertical_dimension
   ) VALUES
     (1, 20.0, 4.0, 15.0, 10.0),  -- PARACHUTE_TERMINATION
-    (3, 25.0, 0.0, 18.0, 12.0)   -- ENERGY_CONVERSION
+    (4, 25.0, 0.0, 18.0, 12.0)   -- ENERGY_CONVERSION
   RETURNING id
 )
 
@@ -284,3 +288,11 @@ VALUES
     (SELECT id FROM grb_data OFFSET 1 LIMIT 1)
   );
 
+-- Create a simple settings table
+CREATE TABLE app_settings (
+                              key VARCHAR(255) PRIMARY KEY,
+                              value BOOLEAN NOT NULL
+);
+
+-- Insert initial value
+INSERT INTO app_settings (key, value) VALUES ('notifications_enabled', TRUE);

@@ -4,16 +4,14 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { FaCalculator, FaChevronDown, FaCog, FaTimes, FaUser, FaUserPlus } from "react-icons/fa";
+import { FaBars, FaCalculator, FaChevronDown, FaCog, FaTimes, FaUser, FaUserPlus } from "react-icons/fa";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header: React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  
-  // Updated to use new auth system
-  const { logout, username, isAuthenticated, loading } = useAuth();
+  const { logout, username, token } = useAuth();
   const { t } = useLanguage();
 
   const handleLoginClick = () => {
@@ -22,7 +20,6 @@ const Header: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
-    setIsUserMenuOpen(false);
     router.push(path);
   };
 
@@ -31,45 +28,24 @@ const Header: React.FC = () => {
     return path !== "/" && pathname!.startsWith(path);
   };
 
-  // Updated navigation items to only show for authenticated users
   const navigationItems = [
     {
       name: t('header.calculate'),
       path: "/",
       icon: FaCalculator,
       description: t('header.droneOperationCalculator'),
-      requireAuth: true,
     },
     {
       name: t('header.adminDashboard'),
       path: "/dashboard",
       icon: FaCog,
       description: t('header.zoneManagement'),
-      requireAuth: true,
     },
   ];
 
   const handleCreateClick = () => {
-    setIsUserMenuOpen(false);
     router.push("/create");
   };
-
-  // Enhanced logout with error handling
-  const handleLogout = async () => {
-    setIsUserMenuOpen(false);
-    try {
-      await logout();
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Force logout even if server call fails
-      window.location.href = "/";
-    }
-  };
-
-  // Filter navigation items based on authentication
-  const visibleNavigationItems = navigationItems.filter(item => 
-    !item.requireAuth || isAuthenticated
-  );
 
   return (
     <>
@@ -86,7 +62,7 @@ const Header: React.FC = () => {
             </div>
 
             <nav className="flex justify-center items-center space-x-8">
-              {visibleNavigationItems.map((item) => {
+              {token && navigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
@@ -111,20 +87,13 @@ const Header: React.FC = () => {
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center space-x-3 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={loading}
                 >
                   <div className="bg-blue-600 p-2 rounded-full">
                     <FaUser size={16} />
                   </div>
-                  
-                  {loading ? (
-                    <span className="text-sm font-medium">Loading...</span>
-                  ) : isAuthenticated && username ? (
+                  {token && (
                     <span className="text-sm font-medium">{username}</span>
-                  ) : (
-                    <span className="text-sm font-medium">Guest</span>
                   )}
-                  
                   <FaChevronDown
                     className={`w-4 h-4 transition-transform ${
                       isUserMenuOpen ? "rotate-180" : ""
@@ -134,7 +103,7 @@ const Header: React.FC = () => {
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
-                    {isAuthenticated && username ? (
+                    {username ? (
                       <>
                         <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-gray-200 flex items-center justify-between">
                           <div>
@@ -153,7 +122,6 @@ const Header: React.FC = () => {
                             <FaUserPlus size={14} />
                           </button>
                         </div>
-                        
                         <button
                           onClick={() => handleNavigation("/dashboard")}
                           className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
@@ -161,24 +129,20 @@ const Header: React.FC = () => {
                           <FaCog size={16} />
                           <span>{t('header.adminDashboard')}</span>
                         </button>
-                        
                         <button
-                          onClick={handleLogout}
+                          onClick={logout}
                           className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-200"
                         >
                           {t('header.signOut')}
                         </button>
                       </>
                     ) : (
-                      <div className="py-2">
-                        <button
-                          onClick={handleLoginClick}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-3"
-                        >
-                          <FaUser size={16} />
-                          <span>{t('header.signIn')}</span>
-                        </button>
-                      </div>
+                      <button
+                        onClick={handleLoginClick}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        {t('header.signIn')}
+                      </button>
                     )}
                   </div>
                 )}

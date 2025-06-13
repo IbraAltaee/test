@@ -1,34 +1,23 @@
 "use client";
 
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 import React, {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   ReactNode,
-  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   username: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
+  token: string | null;
+  emailNotifications?: boolean;
+
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  validateAuth: () => Promise<void>;
-}
-
-interface LoginResponse {
-  username: string;
-  success: boolean;
-  message: string;
-}
-
-interface ValidationResponse {
-  username: string;
-  authenticated: boolean;
-  role: string;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,138 +32,63 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth`;
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [username, setUsername] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Validate authentication with server
-  const validateAuth = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/validate`, {
-        method: 'GET',
-        credentials: 'include', // This sends HttpOnly cookies automatically
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  useEffect(() => {
+    const savedToken = Cookies.get("token") || null;
+    const savedUsername = Cookies.get("username") || null;
 
-      if (response.ok) {
-        const data: ValidationResponse = await response.json();
-        if (data.authenticated) {
-          setUsername(data.username);
-          setIsAuthenticated(true);
-          return;
-        }
-      }
-      
-      // If we get here, authentication failed
-      setIsAuthenticated(false);
-      setUsername(null);
-      
-    } catch (error) {
-      console.error('Auth validation failed:', error);
-      setIsAuthenticated(false);
-      setUsername(null);
+    if (savedToken && savedUsername) {
+      setToken(savedToken);
+      setUsername(savedUsername);
     }
+    setLoading(false);
   }, []);
 
-  // Validate on app start and when tab becomes visible
-  useEffect(() => {
-    const initializeAuth = async () => {
-      await validateAuth();
-      setLoading(false);
-    };
-
-    initializeAuth();
-    
-    // Also validate when user comes back to the tab
-    const handleVisibilityChange = () => {
-      if (!document.hidden && !loading) {
-        validateAuth();
-      }
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [validateAuth, loading]);
-
-  const login = useCallback(async (username: string, password: string) => {
+  const login = async (username: string, password: string) => {
     setLoading(true);
     try {
-      // Basic input validation
-      if (!username?.trim() || !password?.trim()) {
-        throw new Error("Username and password are required");
-      }
-
-      // Sanitize username (remove special characters)
-      const sanitizedUsername = username.trim().replace(/[^\w]/g, "");
-      if (sanitizedUsername !== username.trim()) {
-        throw new Error("Username contains invalid characters");
-      }
-
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include', // Include cookies in request
-        body: JSON.stringify({ 
-          username: sanitizedUsername, 
-          password 
-        }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Authentication failed");
+        throw new Error("Invalid credentials");
       }
 
-      const data: LoginResponse = await response.json();
-      
-      if (!data.success || !data.username) {
-        throw new Error("Invalid server response");
-      }
+      const data = await response.json();
+      setToken(data.token);
+      setUsername(username);
 
-      // Update state - HttpOnly cookie is automatically set by server
-      setUsername(data.username);
-      setIsAuthenticated(true);
-
+      Cookies.set("token", data.token, { expires: 1 });
+      Cookies.set("username", username, { expires: 1 });
     } catch (error) {
-      setIsAuthenticated(false);
+      setToken(null);
       setUsername(null);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const logout = useCallback(async () => {
-    try {
-      // Notify server to clear the cookie
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setUsername(null);
-      setIsAuthenticated(false);
-      router.push('/');
-    }
-  }, [router]);
+  const logout = () => {
+    setUsername(null);
+    setToken(null);
+    Cookies.remove("token");
+    Cookies.remove("username");
+    router.push("/");
+  };
 
   return (
-    <AuthContext.Provider value={{ 
-      username, 
-      isAuthenticated, 
-      loading, 
-      login, 
-      logout,
-      validateAuth
-    }}>
+    <AuthContext.Provider value={{ username, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -31,11 +31,11 @@ const ZoneForm: React.FC<ZoneFormProps> = ({
 }) => {
   const { zone: zoneTranslations, dashboard, common, validation } = useTranslations();
   
-  const [meterInput, setMeterInput] = useState<string>(
-    zone.maxHeight?.toFixed(2).toString() || "",
+  const [meterInput, setMeterInput] = useState<number | null>(
+    parseFloat(zone.maxHeight?.toFixed(2) || ""),
   );
-  const [feetInput, setFeetInput] = useState<string>(
-    zone.maxHeight ? (zone.maxHeight * 3.28084).toFixed(2) : "",
+  const [feetInput, setFeetInput] = useState<number | null>(
+    parseFloat(zone.maxHeight ? (zone.maxHeight * 3.28084).toFixed(2) : ""),
   );
   const [heightError, setHeightError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -88,48 +88,46 @@ const ZoneForm: React.FC<ZoneFormProps> = ({
     onZoneChange({ ...zone, name });
   };
 
-  const handleMeterChange = (value: string) => {
+  const handleMeterChange = (value: number) => {
     setMeterInput(value);
 
-    const parsed = parseFloat(value);
-    if (value.trim() === "") {
-      setFeetInput("");
+    if (value.toString().trim() === "") {
+      setFeetInput(null);
       setHeightError(null);
       onZoneChange({ ...zone, maxHeight: 0 });
       return;
     }
 
-    if (isNaN(parsed)) {
+    if (isNaN(value)) {
       setHeightError("Height must be a number");
       return;
     }
 
-    const error = validateHeight(parsed);
+    const error = validateHeight(value);
     setHeightError(error);
-    setFeetInput((parsed * FEET_PER_METER).toFixed(2));
-    onZoneChange({ ...zone, maxHeight: parsed });
+    setFeetInput(parseFloat((value * FEET_PER_METER).toFixed(2)));
+    onZoneChange({ ...zone, maxHeight: value });
   };
 
-  const handleFeetChange = (value: string) => {
+  const handleFeetChange = (value: number) => {
     setFeetInput(value);
 
-    const parsed = parseFloat(value);
-    if (value.trim() === "") {
-      setMeterInput("");
+    if (value.toString().trim() === "") {
+      setMeterInput(null);
       setHeightError(null);
       onZoneChange({ ...zone, maxHeight: 0 });
       return;
     }
 
-    if (isNaN(parsed)) {
+    if (isNaN(value)) {
       setHeightError("Height must be a number");
       return;
     }
 
-    const meters = parsed / FEET_PER_METER;
+    const meters = value / FEET_PER_METER;
     const error = validateHeight(meters);
     setHeightError(error);
-    setMeterInput(meters.toFixed(2));
+    setMeterInput(parseFloat(meters.toFixed(2)));
     onZoneChange({ ...zone, maxHeight: meters });
   };
 
@@ -227,8 +225,8 @@ const mapId = useMemo(() => {
                     <div className="flex-1">
                       <input
                         type="number"
-                        value={meterInput}
-                        onChange={(e) => handleMeterChange(e.target.value)}
+                        value={meterInput !== null ? meterInput : ""}
+                        onChange={(e) => handleMeterChange(parseFloat(e.target.value))}
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                           heightError
                             ? "border-red-500 focus:ring-red-500"
@@ -244,8 +242,8 @@ const mapId = useMemo(() => {
                     <div className="flex-1">
                       <input
                         type="number"
-                        value={feetInput}
-                        onChange={(e) => handleFeetChange(e.target.value)}
+                        value={feetInput !== null ? feetInput : ""}
+                        onChange={(e) => handleFeetChange(parseFloat(e.target.value))}
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                           heightError
                             ? "border-red-500 focus:ring-red-500"

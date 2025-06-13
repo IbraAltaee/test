@@ -1,5 +1,5 @@
 import { DeleteDroneConfirmationProps } from "@/types/drone";
-import { droneService } from "@/services/droneService";
+import DroneService from "@/services/droneService";
 import { toast } from "react-toastify";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTranslations } from "@/hooks/useTranslations";
@@ -12,21 +12,15 @@ const DeleteConfirmation: React.FC<DeleteDroneConfirmationProps> = ({
   setEditableDrone,
 }) => {
   if (!isOpen || !droneName) return null;
-  
-  // Updated to use new auth system
-  const { isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const { confirmations, notifications, common } = useTranslations();
 
   const handleDelete = async () => {
     if (!droneName) return;
-    if (!isAuthenticated) {
-      toast.error("Please log in to delete drones");
-      return;
-    }
+    if (!token) return;
 
     try {
-      // No token needed - uses HttpOnly cookies automatically
-      await droneService.deleteDrone(droneName);
+      const res = await DroneService.deleteDrone(droneName, token);
       toast.success(notifications("droneDeletedSuccessfully"));
       setConfirmDeleteDrone(null);
       onUpdate();
@@ -58,7 +52,6 @@ const DeleteConfirmation: React.FC<DeleteDroneConfirmationProps> = ({
           <button
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
             onClick={handleDelete}
-            disabled={!isAuthenticated}
           >
             {common("delete")}
           </button>

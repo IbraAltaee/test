@@ -16,6 +16,7 @@ const CreateAdminForm: React.FC = () => {
   const [confirmPasswordError, setConfirmPasswordError] =
     useState<String | null>();
   const router = useRouter();
+  const { token } = useAuth();
   const { auth } = useTranslations();
 
   const clearErrors = () => {
@@ -49,35 +50,38 @@ const CreateAdminForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  clearErrors();
+    e.preventDefault();
+    clearErrors();
 
-  if (!validate()) {
-    return;
-  }
+    if (!validate()) {
+      return;
+    }
+    if (!token) return;
 
-  const adminData = {
-    username: username.trim(),
-    password: password,
+    const adminData: any = {
+      username: username,
+      password: password,
+    };
+
+    try {
+      const response = await AuthService.CreateAdmin(adminData, token);
+
+      if (!response.ok) {
+        toast.error(auth("usernameAlreadyExists"));
+        return;
+      }
+
+      toast.success(auth("adminCreatedSuccessfully"), {
+        autoClose: 2000,
+      });
+
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } catch (error) {
+      toast.error(auth("errorCreatingAdmin"));
+    }
   };
-
-  try {
-    await AuthService.createAdmin(adminData);
-    toast.success(auth("adminCreatedSuccessfully"));
-    
-    // Clear form
-    setUsername("");
-    setPassword("");
-    setConfirmPassword("");
-    
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 2000);
-  } catch (error: any) {
-    console.error("Create admin failed:", error);
-    toast.error(error.message || auth("errorCreatingAdmin"));
-  }
-};
 
   return (
     <form
